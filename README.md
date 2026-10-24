@@ -1,4 +1,4 @@
-﻿# FinMind — SEC Filing Analytics
+# FinMind — SEC Filing Analytics
 
 Agentic Financial Intelligence and SEC Filing Analytics Platform.
 
