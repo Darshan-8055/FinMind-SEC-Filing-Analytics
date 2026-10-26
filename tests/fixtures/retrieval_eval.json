@@ -1,0 +1,51 @@
+
+{
+  "chunks": [
+    {
+      "chunk_id": "AAPL_RISK_001",
+      "ticker": "AAPL",
+      "form_type": "10-K",
+      "section": "Risk Factors",
+      "text": "Supply chain disruptions may delay product manufacturing and increase component costs."
+    },
+    {
+      "chunk_id": "AAPL_FIN_001",
+      "ticker": "AAPL",
+      "form_type": "10-K",
+      "section": "Financial Results",
+      "text": "Revenue increased due to growth in services and strong demand for products."
+    },
+    {
+      "chunk_id": "MSFT_FIN_001",
+      "ticker": "MSFT",
+      "form_type": "10-K",
+      "section": "Financial Results",
+      "text": "Cloud services revenue increased as demand for enterprise computing grew."
+    },
+    {
+      "chunk_id": "MSFT_RISK_001",
+      "ticker": "MSFT",
+      "form_type": "10-K",
+      "section": "Risk Factors",
+      "text": "Cybersecurity incidents could disrupt services and expose confidential information."
+    }
+  ],
+  "queries": [
+    {
+      "query": "supply chain manufacturing costs",
+      "relevant_chunk_ids": ["AAPL_RISK_001"]
+    },
+    {
+      "query": "Apple revenue growth services",
+      "relevant_chunk_ids": ["AAPL_FIN_001"]
+    },
+    {
+      "query": "cloud services revenue",
+      "relevant_chunk_ids": ["MSFT_FIN_001"]
+    },
+    {
+      "query": "cybersecurity incidents confidential information",
+      "relevant_chunk_ids": ["MSFT_RISK_001"]
+    }
+  ]
+}
