@@ -11,6 +11,7 @@ dependencies = [
     "tiktoken>=0.5",
     "unstructured>=0.10",
     "sentence-transformers>=3.0",
+    "qdrant-client>=1.9",
 ]
 
 [project.optional-dependencies]
