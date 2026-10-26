@@ -28,9 +28,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
 # Optional dependency: tiktoken
-# ---------------------------------------------------------------------------
 try:
     import tiktoken
 
@@ -41,9 +39,7 @@ except ImportError:  # pragma: no cover
         "tiktoken is not installed. Falling back to whitespace-based tokens."
     )
 
-# ---------------------------------------------------------------------------
 # Optional dependency: Unstructured
-# ---------------------------------------------------------------------------
 try:
     from unstructured.partition.text import partition_text
 
@@ -54,9 +50,7 @@ except ImportError:  # pragma: no cover
         "unstructured is not installed. Falling back to regex-based extraction."
     )
 
-# ---------------------------------------------------------------------------
 # Constants
-# ---------------------------------------------------------------------------
 DEFAULT_CHUNK_SIZE: int = 512
 DEFAULT_CHUNK_OVERLAP: int = 50
 _TIKTOKEN_ENCODING = "cl100k_base"
@@ -84,9 +78,7 @@ _NOTABLE_ITEMS: dict[str, str] = {
 }
 
 
-# ---------------------------------------------------------------------------
 # Tokenizer helpers
-# ---------------------------------------------------------------------------
 def _get_encoder() -> Any:
     """Return the tiktoken encoding, or None if unavailable."""
     if not _TIKTOKEN_AVAILABLE:
@@ -122,9 +114,7 @@ def _count_tokens(text: str, encoder: Any) -> int:
     return max(1, int(len(text.split()) * 1.3))
 
 
-# ---------------------------------------------------------------------------
 # Heading detection
-# ---------------------------------------------------------------------------
 def _normalise_heading(raw: str) -> str:
     """Return a canonical label for a recognized SEC Item heading."""
     raw = raw.strip()
@@ -160,9 +150,7 @@ def _extract_headings_and_sections(text: str) -> list[tuple[str, str]]:
     return sections
 
 
-# ---------------------------------------------------------------------------
 # Token-aware chunking
-# ---------------------------------------------------------------------------
 def _chunk_text(
     text: str,
     encoder: Any,
@@ -205,16 +193,13 @@ def _chunk_text(
     return chunks
 
 
-# ---------------------------------------------------------------------------
 # Unstructured-backed element extraction
-# ---------------------------------------------------------------------------
 def _elements_to_sections(raw_text: str) -> list[tuple[str, str]]:
     """
     Extract text elements and group them into (heading, body) pairs.
 
     Only SEC-style ITEM/PART headings are treated as section headings.
-    Unstructured can classify ordinary body sentences as Title elements,
-    so element type alone must not determine whether text is a heading.
+    If Unstructured returns no usable body text, use regex extraction.
     """
     if not _UNSTRUCTURED_AVAILABLE:
         return _extract_headings_and_sections(raw_text)
@@ -237,36 +222,37 @@ def _elements_to_sections(raw_text: str) -> list[tuple[str, str]]:
         if not element_text:
             continue
 
-        # Critical fix: don't classify every Unstructured Title as a heading.
         is_sec_heading = bool(_HEADING_RE.match(element_text))
 
         if is_sec_heading:
             if buffer:
-                sections.append(
-                    (current_heading, "\n\n".join(buffer))
-                )
+                sections.append((current_heading, "\n\n".join(buffer)))
                 buffer = []
 
             current_heading = _normalise_heading(element_text)
         else:
-            # Preserve Title, NarrativeText, and other element text as content.
+            # Preserve body text even when Unstructured labels it as Title.
             buffer.append(element_text)
 
     if buffer:
         sections.append((current_heading, "\n\n".join(buffer)))
 
-    if not sections and current_heading:
-        sections.append((current_heading, ""))
+    # FIX: Fall back when Unstructured returns no usable body content.
+    if not any(body.strip() for _, body in sections):
+        logger.warning(
+            "Unstructured extracted no usable body text. "
+            "Using regex fallback."
+        )
+        return _extract_headings_and_sections(raw_text)
 
     return sections
 
 
-# ---------------------------------------------------------------------------
 # Main public API
-# ---------------------------------------------------------------------------
 @dataclass
 class ParseConfig:
     """Chunking configuration passed to parse_filing."""
+
     chunk_size: int = DEFAULT_CHUNK_SIZE
     chunk_overlap: int = DEFAULT_CHUNK_OVERLAP
 
