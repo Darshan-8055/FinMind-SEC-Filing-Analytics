@@ -1,42 +1,76 @@
+"""Run the FinMind retrieval evaluation for keyword, semantic, and hybrid search.
 
-"""Run the sample evaluation for FinMind keyword retrieval."""
+This script evaluates all three retrieval methods against every query in the
+fixture file and prints per-query and macro-average Precision@K and Recall@K.
+
+Usage
+-----
+    python run_retrieval_evaluation.py
+
+Requirements
+------------
+- The sentence-transformers model ``all-MiniLM-L6-v2`` must be available
+  locally (downloaded automatically the first time).
+- No live Qdrant service is required; evaluation runs in memory.
+
+Notes
+-----
+Results are produced from the synthetic fixture in
+``tests/fixtures/retrieval_eval.json``.  They reflect a small, hand-crafted
+chunk set and should not be reported as production retrieval quality figures.
+"""
 
 import json
 from pathlib import Path
 
-from src.retrieval.evaluation import evaluate_query
+from src.retrieval.evaluation import evaluate_all_queries
+from src.retrieval.semantic_search import load_embedding_model
 
-fixture_path = Path("tests/fixtures/retrieval_eval.json")
+FIXTURE_PATH = Path("tests/fixtures/retrieval_eval.json")
+K = 3
 
-with fixture_path.open("r", encoding="utf-8") as file:
-    dataset = json.load(file)
+with FIXTURE_PATH.open("r", encoding="utf-8") as fh:
+    dataset = json.load(fh)
 
-results = []
+print("Loading embedding model...")
+model = load_embedding_model()
 
-for item in dataset["queries"]:
-    result = evaluate_query(
-        query=item["query"],
-        chunks=dataset["chunks"],
-        relevant_ids=item["relevant_chunk_ids"],
-        k=3,
+print(f"\nRunning retrieval evaluation at k={K} across "
+      f"{len(dataset['queries'])} queries...\n")
+
+output = evaluate_all_queries(
+    queries=dataset["queries"],
+    chunks=dataset["chunks"],
+    model=model,
+    k=K,
+)
+
+METHODS = ("keyword", "semantic", "hybrid")
+LABEL_WIDTH = 10
+
+# Per-query results
+for entry in output["per_query"]:
+    print(f"Query: {entry['query']!r}")
+    for method in METHODS:
+        m = entry[method]
+        print(
+            f"  {method:<{LABEL_WIDTH}}"
+            f"  Precision@{K}: {m['precision_at_k']:.3f}"
+            f"  Recall@{K}: {m['recall_at_k']:.3f}"
+            f"  Retrieved: {m['retrieved_chunk_ids']}"
+        )
+    print()
+
+# Macro-average summary
+print("--- Macro-average ---")
+for method in METHODS:
+    macro = output["macro_average"][method]
+    print(
+        f"  {method:<{LABEL_WIDTH}}"
+        f"  Precision@{K}: {macro['precision_at_k']:.3f}"
+        f"  Recall@{K}: {macro['recall_at_k']:.3f}"
     )
-    results.append(result)
 
-for result in results:
-    print(f"\nQuery: {result['query']}")
-    print(f"Retrieved: {result['retrieved_chunk_ids']}")
-    print(f"Relevant:  {result['relevant_chunk_ids']}")
-    print(f"Precision@3: {result['precision_at_k']:.2f}")
-    print(f"Recall@3:    {result['recall_at_k']:.2f}")
-
-if results:
-    avg_precision = sum(
-        item["precision_at_k"] for item in results
-    ) / len(results)
-    avg_recall = sum(
-        item["recall_at_k"] for item in results
-    ) / len(results)
-
-    print("\n--- Overall Results ---")
-    print(f"Average Precision@3: {avg_precision:.2f}")
-    print(f"Average Recall@3:    {avg_recall:.2f}")
+print()
+print("NOTE: Results are from synthetic fixture data. "
+      "Do not report as production figures.")
