@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from src.retrieval.evaluation import (
+    evaluate_all_retrievers,
     evaluate_query,
     precision_at_k,
     recall_at_k,
@@ -13,25 +14,37 @@ from src.retrieval.evaluation import (
 
 @pytest.fixture
 def evaluation_data():
-    path = (
-        Path(__file__).parent
-        / "fixtures"
-        / "retrieval_eval.json"
-    )
+    path = Path(__file__).parent / "fixtures" / "retrieval_eval.json"
     with path.open(encoding="utf-8") as file:
         return json.load(file)
 
 
+class FakeEmbeddingModel:
+    """Small deterministic embedding model for evaluation tests."""
+
+    def encode(self, texts):
+        vocabulary = [
+            "supply", "chain", "manufacturing", "costs",
+            "apple", "revenue", "growth", "services",
+            "cloud", "cybersecurity", "confidential", "information",
+        ]
+
+        vectors = []
+        for text in texts:
+            tokens = set(text.lower().replace(",", "").split())
+            vectors.append([
+                float(word in tokens) for word in vocabulary
+            ])
+
+        return vectors
+
+
 def test_precision_at_k():
-    assert precision_at_k(
-        ["A", "B", "C"], {"A", "C"}, 3
-    ) == pytest.approx(2 / 3)
+    assert precision_at_k(["A", "B", "C"], {"A", "C"}, 3) == pytest.approx(2 / 3)
 
 
 def test_recall_at_k():
-    assert recall_at_k(
-        ["A", "B"], {"A", "C"}, 2
-    ) == pytest.approx(0.5)
+    assert recall_at_k(["A", "B"], {"A", "C"}, 2) == pytest.approx(0.5)
 
 
 def test_empty_results_have_zero_precision():
@@ -82,3 +95,40 @@ def test_evaluates_all_sample_queries(evaluation_data):
 
     assert len(results) == 4
     assert all(result["recall_at_k"] == 1.0 for result in results)
+
+
+def test_evaluates_keyword_semantic_and_hybrid(evaluation_data):
+    case = evaluation_data["queries"][0]
+
+    result = evaluate_all_retrievers(
+        query=case["query"],
+        chunks=evaluation_data["chunks"],
+        relevant_ids=case["relevant_chunk_ids"],
+        model=FakeEmbeddingModel(),
+        k=3,
+    )
+
+    assert set(result) == {"query", "keyword", "semantic", "hybrid"}
+
+    for method in ("keyword", "semantic", "hybrid"):
+        assert result[method]["query"] == case["query"]
+        assert "retrieved_chunk_ids" in result[method]
+        assert "precision_at_k" in result[method]
+        assert "recall_at_k" in result[method]
+        assert 0.0 <= result[method]["precision_at_k"] <= 1.0
+        assert 0.0 <= result[method]["recall_at_k"] <= 1.0
+
+
+def test_all_retrievers_find_relevant_chunk(evaluation_data):
+    case = evaluation_data["queries"][0]
+
+    result = evaluate_all_retrievers(
+        query=case["query"],
+        chunks=evaluation_data["chunks"],
+        relevant_ids=case["relevant_chunk_ids"],
+        model=FakeEmbeddingModel(),
+        k=3,
+    )
+
+    for method in ("keyword", "semantic", "hybrid"):
+        assert result[method]["recall_at_k"] == 1.0
