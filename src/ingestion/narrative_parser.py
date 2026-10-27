@@ -7,16 +7,9 @@ Phase-1 ingestion module for the FinMind project.
 Responsibilities
 ----------------
 * Parse SEC 10-K / 10-Q narrative text (plain-text or HTML) via Unstructured.
-* Detect and preserve section headings (Item 1, Item 7, etc.).
+* Detect and preserve section headings.
 * Split text into token-aware chunks with configurable overlap.
 * Attach metadata to every chunk for retrieval and citation.
-
-Public API
-----------
-    parse_filing(text, filename, filing_type) -> list[dict]
-
-Each chunk record contains:
-    text, filename, filing_type, section_heading, chunk_index
 """
 
 from __future__ import annotations
@@ -24,6 +17,7 @@ from __future__ import annotations
 import logging
 import re
 from dataclasses import dataclass
+from html import unescape
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -42,15 +36,17 @@ except ImportError:  # pragma: no cover
 # Optional dependency: Unstructured
 try:
     from unstructured.partition.text import partition_text
+    from unstructured.partition.html import partition_html
 
     _UNSTRUCTURED_AVAILABLE = True
 except ImportError:  # pragma: no cover
+    partition_text = None
+    partition_html = None
     _UNSTRUCTURED_AVAILABLE = False
     logger.warning(
         "unstructured is not installed. Falling back to regex-based extraction."
     )
 
-# Constants
 DEFAULT_CHUNK_SIZE: int = 512
 DEFAULT_CHUNK_OVERLAP: int = 50
 _TIKTOKEN_ENCODING = "cl100k_base"
@@ -78,12 +74,10 @@ _NOTABLE_ITEMS: dict[str, str] = {
 }
 
 
-# Tokenizer helpers
 def _get_encoder() -> Any:
     """Return the tiktoken encoding, or None if unavailable."""
     if not _TIKTOKEN_AVAILABLE:
         return None
-
     try:
         return tiktoken.get_encoding(_TIKTOKEN_ENCODING)
     except Exception as exc:  # pragma: no cover
@@ -102,7 +96,6 @@ def _decode(token_ids: list[int], text: str, encoder: Any) -> str:
     """Decode token IDs, with a word-based fallback."""
     if encoder is not None:
         return encoder.decode(token_ids)
-
     words = text.split()
     return " ".join(words[i] for i in token_ids if i < len(words))
 
@@ -114,43 +107,52 @@ def _count_tokens(text: str, encoder: Any) -> int:
     return max(1, int(len(text.split()) * 1.3))
 
 
-# Heading detection
 def _normalise_heading(raw: str) -> str:
     """Return a canonical label for a recognized SEC Item heading."""
     raw = raw.strip()
     match = re.search(r"ITEM\s+(\d+[A-Z]?)", raw, re.IGNORECASE)
-
     if match:
         key = match.group(1).lower()
         if key in _NOTABLE_ITEMS:
             return _NOTABLE_ITEMS[key]
-
     return raw
+
+
+def _plain_text_from_html(raw_html: str) -> str:
+    """Remove markup and return a readable-text fallback."""
+    # Add line boundaries around common block-level tags before removing markup.
+    text = re.sub(
+        r"(?is)</(?:p|div|tr|table|li|h[1-6]|section|article|br)\s*>",
+        "\n",
+        raw_html,
+    )
+    text = re.sub(r"(?is)<br\s*/?>", "\n", text)
+    text = re.sub(r"(?is)<[^>]+>", " ", text)
+    text = unescape(text)
+    return re.sub(r"[ \t]+", " ", text)
 
 
 def _extract_headings_and_sections(text: str) -> list[tuple[str, str]]:
     """Split text into (heading, body) pairs using SEC heading patterns."""
+    text = _plain_text_from_html(text) if re.search(r"(?is)<html\b|<body\b", text) else text
+
     sections: list[tuple[str, str]] = []
     last_end = 0
     current_heading = ""
 
     for match in _HEADING_RE.finditer(text):
         body = text[last_end:match.start()]
-
         if body.strip():
             sections.append((current_heading, body))
-
         current_heading = _normalise_heading(match.group(0))
         last_end = match.end()
 
     tail = text[last_end:]
     if tail.strip():
         sections.append((current_heading, tail))
-
     return sections
 
 
-# Token-aware chunking
 def _chunk_text(
     text: str,
     encoder: Any,
@@ -160,13 +162,10 @@ def _chunk_text(
     """Split text into overlapping token windows."""
     if not text or not text.strip():
         return []
-
     if chunk_size < 1:
         raise ValueError("chunk_size must be at least 1")
-
     if chunk_overlap < 0:
         raise ValueError("chunk_overlap cannot be negative")
-
     if chunk_overlap >= chunk_size:
         raise ValueError(
             f"chunk_overlap ({chunk_overlap}) must be less than "
@@ -180,35 +179,36 @@ def _chunk_text(
     chunks: list[str] = []
     start = 0
     step = chunk_size - chunk_overlap
-
     while start < len(token_ids):
         end = min(start + chunk_size, len(token_ids))
         chunk = _decode(token_ids[start:end], text, encoder)
-
         if chunk.strip():
             chunks.append(chunk)
-
         start += step
-
     return chunks
 
 
-# Unstructured-backed element extraction
-def _elements_to_sections(raw_text: str) -> list[tuple[str, str]]:
+def _elements_to_sections(raw_text: str, filename: str = "") -> list[tuple[str, str]]:
     """
-    Extract text elements and group them into (heading, body) pairs.
+    Extract HTML or plain text into (heading, body) sections.
 
-    Only SEC-style ITEM/PART headings are treated as section headings.
-    If Unstructured returns no usable body text, use regex extraction.
+    Uses the appropriate Unstructured partitioner for the input format.
+    Falls back to readable plain text and regex heading detection on failure.
     """
+    is_html = bool(re.search(r"(?is)<html\b|<body\b|<!doctype\s+html", raw_text))
+
     if not _UNSTRUCTURED_AVAILABLE:
         return _extract_headings_and_sections(raw_text)
 
     try:
-        elements = partition_text(text=raw_text)
+        if is_html:
+            elements = partition_html(text=raw_text)
+        else:
+            elements = partition_text(text=raw_text)
     except Exception as exc:
         logger.warning(
-            "Unstructured partition_text failed (%s). Using regex fallback.",
+            "Unstructured extraction failed for %r (%s). Using regex fallback.",
+            filename,
             exc,
         )
         return _extract_headings_and_sections(raw_text)
@@ -222,33 +222,29 @@ def _elements_to_sections(raw_text: str) -> list[tuple[str, str]]:
         if not element_text:
             continue
 
-        is_sec_heading = bool(_HEADING_RE.match(element_text))
-
-        if is_sec_heading:
+        # A heading may contain line breaks or surrounding whitespace.
+        heading_match = _HEADING_RE.match(element_text)
+        if heading_match:
             if buffer:
                 sections.append((current_heading, "\n\n".join(buffer)))
                 buffer = []
-
             current_heading = _normalise_heading(element_text)
         else:
-            # Preserve body text even when Unstructured labels it as Title.
             buffer.append(element_text)
 
     if buffer:
         sections.append((current_heading, "\n\n".join(buffer)))
 
-    # FIX: Fall back when Unstructured returns no usable body content.
     if not any(body.strip() for _, body in sections):
         logger.warning(
-            "Unstructured extracted no usable body text. "
-            "Using regex fallback."
+            "Unstructured extracted no usable body text for %r. Using regex fallback.",
+            filename,
         )
         return _extract_headings_and_sections(raw_text)
 
     return sections
 
 
-# Main public API
 @dataclass
 class ParseConfig:
     """Chunking configuration passed to parse_filing."""
@@ -271,16 +267,13 @@ def parse_filing(
         config = ParseConfig()
 
     if not text or not text.strip():
-        logger.info(
-            "parse_filing: empty text received for %r; returning [].",
-            filename,
-        )
+        logger.info("parse_filing: empty text received for %r; returning [].", filename)
         return []
 
     encoder = _get_encoder()
 
     try:
-        sections = _elements_to_sections(text)
+        sections = _elements_to_sections(text, filename)
     except Exception as exc:
         logger.error(
             "parse_filing: unexpected error extracting sections from %r: %s",
@@ -288,7 +281,8 @@ def parse_filing(
             exc,
             exc_info=True,
         )
-        sections = [("", text)]
+        fallback_text = _plain_text_from_html(text)
+        sections = [("", fallback_text)]
 
     records: list[dict] = []
     chunk_index = 0
@@ -307,7 +301,6 @@ def parse_filing(
         for chunk_text in chunks:
             if not chunk_text.strip():
                 continue
-
             records.append(
                 {
                     "text": chunk_text,
