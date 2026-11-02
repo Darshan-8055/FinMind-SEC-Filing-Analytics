@@ -150,17 +150,23 @@ def build_evidence_prompt(
         sources[label] = {
             "chunk_id": chunk_id,
             "source_url": source_url,
-            "section": str(chunk.get("section") or "Unknown section"),
+            "company_name": str(chunk.get("company_name") or "Unknown"),
             "ticker": str(chunk.get("ticker") or "Unknown"),
+            "form_type": str(chunk.get("form_type") or "Unknown"),
             "filing_date": str(chunk.get("filing_date") or "Unknown"),
+            "period_end": str(chunk.get("period_end") or "Unknown"),
+            "section": str(chunk.get("section") or "Unknown section"),
         }
 
         # Passage text is placed between delimiters to separate it from the
         # instruction block and signal to the model that it is untrusted data.
         evidence_parts.append(
             f"[{label}]\n"
+            f"Company: {sources[label]['company_name']}\n"
             f"Ticker: {sources[label]['ticker']}\n"
+            f"Form type: {sources[label]['form_type']}\n"
             f"Filing date: {sources[label]['filing_date']}\n"
+            f"Period end: {sources[label]['period_end']}\n"
             f"Section: {sources[label]['section']}\n"
             f"Chunk ID: {chunk_id}\n"
             f"Passage:\n<<<\n{text}\n>>>"
