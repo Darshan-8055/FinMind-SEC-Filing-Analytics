@@ -1,8 +1,8 @@
 
-"""Evaluation metrics for information retrieval.
+"""Evaluation metrics for information retrieval and answer generation.
 
-Metric conventions
-------------------
+Metric conventions and limitations
+----------------------------------
 - Precision@K: (relevant hits in top-K) / K.
   Returns 0.0 when the retrieved list is empty; denominator K is always
   a positive integer so division by zero cannot occur.
@@ -11,9 +11,16 @@ Metric conventions
   of the relevant set which is checked before division.
 - Macro-average: each query is weighted equally.
   Returns zeros when the query list is empty.
+- Evidence Coverage: fraction of known relevant chunks cited in the generated answer.
+  Returns 0.0 when relevant set is empty.
+- Citation Validity Rate: fraction of citations referencing legitimate retrieved sources.
+  Returns None when no citations are cited (undefined; avoids false 100% claims).
+- Answer Grounding: evaluates citation integrity, coverage, and claim verification status.
+  Semantic grounding cannot be established from citation presence alone; without
+  claim verification, overall grounding is reported as None (unknown).
 """
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
 from src.retrieval.hybrid_search import hybrid_search
@@ -255,4 +262,281 @@ def evaluate_all_queries(
         "k": k,
         "per_query": per_query,
         "macro_average": macro,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Answer Generation and Citation Evaluation Metrics
+# ---------------------------------------------------------------------------
+
+def evidence_coverage(
+    cited_chunk_ids: Iterable[str],
+    relevant_chunk_ids: Iterable[str],
+) -> float:
+    """Fraction of relevant evidence chunks that were cited in an answer.
+
+    Returns 0.0 if *relevant_chunk_ids* is empty.
+    """
+    rel_set = set(relevant_chunk_ids)
+    if not rel_set:
+        return 0.0
+
+    cited_set = set(cited_chunk_ids)
+    return len(cited_set & rel_set) / len(rel_set)
+
+
+def citation_validity_rate(
+    cited_labels: Sequence[str],
+    valid_labels: Iterable[str],
+) -> float | None:
+    """Fraction of cited source labels that actually exist in the retrieved evidence.
+
+    Returns None when *cited_labels* is empty, indicating that citation validity
+    is undefined because no citations were made.
+
+    Parameters
+    ----------
+    cited_labels:
+        Sequence of citation labels extracted from the answer (e.g. ``["S1", "S2"]``).
+    valid_labels:
+        Iterable of valid source labels present in the evidence prompt (e.g. ``{"S1", "S2"}``).
+
+    Returns
+    -------
+    float | None:
+        Rate between 0.0 and 1.0, or None if *cited_labels* is empty.
+    """
+    if not cited_labels:
+        return None
+
+    valid_set = set(valid_labels)
+    valid_count = sum(1 for label in cited_labels if label in valid_set)
+    return valid_count / len(cited_labels)
+
+
+def answer_grounding_metrics(
+    answer_result: Mapping[str, Any],
+    relevant_chunk_ids: Iterable[str] | None = None,
+    expected_insufficient: bool | None = None,
+    valid_labels: Iterable[str] | None = None,
+) -> dict[str, Any]:
+    """Calculate answer citation integrity, evidence coverage, and claim verification status.
+
+    Assumptions and Limitations
+    ---------------------------
+    - **Citation Presence vs. Grounding**: Merely citing sources does NOT establish
+      that the generated claims are semantically entailed or factually accurate.
+      The LLM may hallucinate claims while citing authentic source labels.
+    - **Claim Verification Requirement**: True semantic grounding can only be
+      confirmed when an explicit claim-level verifier evaluates the text. If no
+      verification was performed, ``is_grounded`` is reported as ``None`` (unknown)
+      rather than claiming success.
+    - **Citation Validity**: Reflects whether citation labels match trusted sources;
+      it does not evaluate semantic entailment of the cited passage.
+    - **Evidence Coverage**: Measures whether known relevant chunks were cited; does
+      not measure whether the citations were used accurately in context.
+
+    Parameters
+    ----------
+    answer_result:
+        Output dict from :meth:`AnswerGenerator.answer`.
+    relevant_chunk_ids:
+        Optional known relevant chunk IDs for the question.
+    expected_insufficient:
+        Optional expected boolean flag indicating whether the question
+        should trigger insufficient-evidence handling.
+    valid_labels:
+        Optional set of known valid source labels. If omitted, uses the labels
+        from ``answer_result.get("citations", [])``.
+
+    Returns
+    -------
+    dict with:
+    - ``citation_count``: Total citations included.
+    - ``cited_chunk_ids``: List of chunk_ids cited.
+    - ``has_citations``: True if at least one citation is present.
+    - ``citation_validity_rate``: Rate of valid citations, or None if no citations.
+    - ``insufficient_evidence``: Boolean flag from answer_result.
+    - ``insufficient_evidence_correct``: True/False if expected_insufficient provided, else None.
+    - ``evidence_coverage``: Coverage ratio if relevant_chunk_ids provided, else None.
+    - ``claim_verification_status``: 'verified', 'unverified', 'unavailable', or 'not_performed'.
+    - ``claim_verified``: True if verified, False if unverified, None if not performed/unavailable.
+    - ``is_grounded``: True if confirmed by claim verifier. False if insufficient evidence or unverified.
+      None (unknown) if verification was not performed.
+    """
+    raw_citations = answer_result.get("citations", [])
+    valid_citations: list[Mapping[str, Any]] = []
+    cited_chunk_ids: list[str] = []
+    cited_labels: list[str] = []
+
+    if isinstance(raw_citations, Sequence) and not isinstance(raw_citations, (str, bytes)):
+        for c in raw_citations:
+            if not isinstance(c, Mapping):
+                continue
+            lbl = c.get("label")
+            cid = c.get("chunk_id")
+            if not isinstance(lbl, str) or not lbl.strip():
+                continue
+            if isinstance(cid, bool) or not isinstance(cid, (str, int)) or not str(cid).strip():
+                continue
+            valid_citations.append(c)
+            cited_labels.append(lbl.strip())
+            cited_chunk_ids.append(str(cid).strip())
+
+    is_insufficient = bool(answer_result.get("insufficient_evidence", False))
+    has_citations = bool(valid_citations)
+    citation_count = len(valid_citations)
+
+    # Citation validity rate: return None when valid_labels is not supplied.
+    # Do not assume all cited labels are valid.
+    if valid_labels is not None:
+        cit_validity = citation_validity_rate(cited_labels, set(valid_labels))
+    else:
+        cit_validity = None
+
+    coverage = None
+    if relevant_chunk_ids is not None:
+        coverage = evidence_coverage(cited_chunk_ids, relevant_chunk_ids)
+
+    insufficient_correct = None
+    if expected_insufficient is not None:
+        insufficient_correct = (is_insufficient == expected_insufficient)
+
+    # Check claim verification status
+    verification = answer_result.get("verification")
+    if isinstance(verification, Mapping):
+        v_avail = bool(verification.get("verification_available", False))
+        v_verified = bool(verification.get("verified", False))
+        if not v_avail:
+            claim_status = "unavailable"
+            claim_verified = None
+        elif v_verified:
+            claim_status = "verified"
+            claim_verified = True
+        else:
+            claim_status = "unverified"
+            claim_verified = False
+    else:
+        claim_status = "not_performed"
+        claim_verified = None
+
+    # Overall grounding assessment:
+    # Cannot infer semantic claim support from citation labels alone.
+    if is_insufficient:
+        is_grounded: bool | None = False
+    elif not has_citations:
+        is_grounded = False
+    elif claim_status == "verified":
+        is_grounded = True
+    elif claim_status == "unverified":
+        is_grounded = False
+    else:
+        # Verification was not performed or was unavailable; semantic grounding is unknown.
+        is_grounded = None
+
+    return {
+        "citation_count": citation_count,
+        "cited_chunk_ids": cited_chunk_ids,
+        "has_citations": has_citations,
+        "citation_validity_rate": cit_validity,
+        "insufficient_evidence": is_insufficient,
+        "insufficient_evidence_correct": insufficient_correct,
+        "evidence_coverage": coverage,
+        "claim_verification_status": claim_status,
+        "claim_verified": claim_verified,
+        "is_grounded": is_grounded,
+    }
+
+
+def evaluate_answer_generator(
+    test_cases: Iterable[Mapping[str, Any]],
+    answer_generator: Any,
+) -> dict[str, Any]:
+    """Evaluate an AnswerGenerator across multiple test cases.
+
+    Each test case must provide:
+    - ``question`` (str)
+    Optional keys:
+    - ``relevant_chunk_ids`` (list[str])
+    - ``expected_insufficient`` (bool)
+    - ``top_k`` (int)
+    - ``filters`` (dict)
+
+    Returns a summary dict with accuracy, grounding rate, and per-case results.
+    """
+    cases = list(test_cases)
+    if not cases:
+        return {
+            "total_cases": 0,
+            "grounded_answers_rate": None,
+            "citation_presence_rate": 0.0,
+            "insufficient_evidence_accuracy": None,
+            "mean_citations_per_answer": 0.0,
+            "per_case_results": [],
+        }
+
+    per_case: list[dict[str, Any]] = []
+    grounded_eval_count = 0
+    grounded_true_count = 0
+    citation_present_count = 0
+    insufficient_correct_count = 0
+    insufficient_evaluated_count = 0
+    total_citations = 0
+
+    for case in cases:
+        question = case["question"]
+        top_k = case.get("top_k", 5)
+        filters = case.get("filters")
+        relevant_ids = case.get("relevant_chunk_ids")
+        expected_insufficient = case.get("expected_insufficient")
+        valid_labels = case.get("valid_labels")
+
+        result = answer_generator.answer(question, top_k=top_k, filters=filters)
+        metrics = answer_grounding_metrics(
+            result,
+            relevant_chunk_ids=relevant_ids,
+            expected_insufficient=expected_insufficient,
+            valid_labels=valid_labels,
+        )
+
+        if metrics["has_citations"] and not metrics["insufficient_evidence"]:
+            citation_present_count += 1
+
+        if metrics["is_grounded"] is not None:
+            grounded_eval_count += 1
+            if metrics["is_grounded"] is True:
+                grounded_true_count += 1
+
+        if metrics["insufficient_evidence_correct"] is not None:
+            insufficient_evaluated_count += 1
+            if metrics["insufficient_evidence_correct"]:
+                insufficient_correct_count += 1
+
+        total_citations += metrics["citation_count"]
+
+        per_case.append({
+            "question": question,
+            "answer_result": result,
+            "metrics": metrics,
+        })
+
+    n = len(cases)
+    insufficient_acc = (
+        insufficient_correct_count / insufficient_evaluated_count
+        if insufficient_evaluated_count > 0
+        else None
+    )
+    grounded_rate = (
+        grounded_true_count / grounded_eval_count
+        if grounded_eval_count > 0
+        else None
+    )
+
+    return {
+        "total_cases": n,
+        "grounded_answers_rate": grounded_rate,
+        "citation_presence_rate": citation_present_count / n,
+        "insufficient_evidence_accuracy": insufficient_acc,
+        "mean_citations_per_answer": total_citations / n,
+        "per_case_results": per_case,
     }

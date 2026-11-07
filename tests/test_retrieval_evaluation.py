@@ -5,9 +5,13 @@ from pathlib import Path
 import pytest
 
 from src.retrieval.evaluation import (
+    answer_grounding_metrics,
+    citation_validity_rate,
     evaluate_all_queries,
     evaluate_all_retrievers,
+    evaluate_answer_generator,
     evaluate_query,
+    evidence_coverage,
     macro_average_metrics,
     precision_at_k,
     recall_at_k,
@@ -394,3 +398,242 @@ def test_evaluate_all_queries_rejects_invalid_candidate_k(evaluation_data):
             k=3,
             candidate_k=0,
         )
+
+
+# ---------------------------------------------------------------------------
+# Unit tests — evidence_coverage & citation_validity_rate
+# ---------------------------------------------------------------------------
+
+def test_evidence_coverage_full():
+    assert evidence_coverage(["c1", "c2"], ["c1", "c2"]) == pytest.approx(1.0)
+
+
+def test_evidence_coverage_partial():
+    assert evidence_coverage(["c1"], ["c1", "c2"]) == pytest.approx(0.5)
+
+
+def test_evidence_coverage_empty_relevant():
+    assert evidence_coverage(["c1"], []) == 0.0
+
+
+def test_citation_validity_rate_all_valid():
+    assert citation_validity_rate(["S1", "S2"], {"S1", "S2", "S3"}) == pytest.approx(1.0)
+
+
+def test_citation_validity_rate_partial_invalid():
+    assert citation_validity_rate(["S1", "S99"], {"S1", "S2"}) == pytest.approx(0.5)
+
+
+def test_citation_validity_rate_empty_citations():
+    """Undefined validity rate when no citations were made returns None."""
+    assert citation_validity_rate([], {"S1", "S2"}) is None
+
+
+def test_citation_validity_rate_mixed():
+    """Test mixed valid and invalid citation labels."""
+    labels = ["S1", "S2", "S99"]
+    valid = {"S1", "S2", "S3"}
+    assert citation_validity_rate(labels, valid) == pytest.approx(2 / 3)
+
+
+# ---------------------------------------------------------------------------
+# Unit tests — answer_grounding_metrics & evaluate_answer_generator
+# ---------------------------------------------------------------------------
+
+def test_answer_grounding_metrics_grounded_with_verification():
+    """When verified by claim verifier, is_grounded is True."""
+    answer_res = {
+        "question": "What is revenue?",
+        "answer": "Revenue grew [S1].",
+        "citations": [{"label": "S1", "chunk_id": "c1"}],
+        "insufficient_evidence": False,
+        "verification": {"verified": True, "verification_available": True},
+    }
+    metrics = answer_grounding_metrics(answer_res, relevant_chunk_ids=["c1", "c2"], expected_insufficient=False)
+    assert metrics["is_grounded"] is True
+    assert metrics["has_citations"] is True
+    assert metrics["citation_count"] == 1
+    assert metrics["cited_chunk_ids"] == ["c1"]
+    assert metrics["evidence_coverage"] == pytest.approx(0.5)
+    assert metrics["insufficient_evidence_correct"] is True
+    assert metrics["claim_verification_status"] == "verified"
+    assert metrics["claim_verified"] is True
+
+
+def test_answer_grounding_metrics_without_verification_is_unknown():
+    """Without claim verification, semantic grounding cannot be established from citations alone."""
+    answer_res = {
+        "question": "What is revenue?",
+        "answer": "Revenue grew [S1].",
+        "citations": [{"label": "S1", "chunk_id": "c1"}],
+        "insufficient_evidence": False,
+    }
+    metrics = answer_grounding_metrics(answer_res, relevant_chunk_ids=["c1"])
+    assert metrics["has_citations"] is True
+    assert metrics["is_grounded"] is None  # Unknown/undefined without claim verifier
+    assert metrics["claim_verification_status"] == "not_performed"
+    assert metrics["claim_verified"] is None
+
+
+def test_answer_grounding_metrics_unverified():
+    """When claim verifier finds unsupported claims, is_grounded is False."""
+    answer_res = {
+        "question": "What is revenue?",
+        "answer": "Revenue grew [S1].",
+        "citations": [{"label": "S1", "chunk_id": "c1"}],
+        "insufficient_evidence": False,
+        "verification": {"verified": False, "verification_available": True, "unsupported_claims": ["grew"]},
+    }
+    metrics = answer_grounding_metrics(answer_res)
+    assert metrics["is_grounded"] is False
+    assert metrics["claim_verification_status"] == "unverified"
+    assert metrics["claim_verified"] is False
+
+
+def test_answer_grounding_metrics_insufficient():
+    answer_res = {
+        "question": "What is revenue?",
+        "answer": "I could not find sufficient evidence...",
+        "citations": [],
+        "insufficient_evidence": True,
+    }
+    metrics = answer_grounding_metrics(answer_res, expected_insufficient=True)
+    assert metrics["is_grounded"] is False
+    assert metrics["has_citations"] is False
+    assert metrics["citation_count"] == 0
+    assert metrics["insufficient_evidence"] is True
+    assert metrics["insufficient_evidence_correct"] is True
+
+
+def test_answer_grounding_metrics_missing_valid_labels_is_none():
+    """When valid_labels is not supplied, citation_validity_rate must be None."""
+    answer_res = {
+        "question": "Q?",
+        "answer": "Answer [S1].",
+        "citations": [{"label": "S1", "chunk_id": "c1"}],
+        "insufficient_evidence": False,
+    }
+    metrics = answer_grounding_metrics(answer_res)
+    assert metrics["citation_validity_rate"] is None
+
+
+def test_answer_grounding_metrics_fabricated_citation_labels():
+    """Fabricated citation labels evaluated against valid_labels report correct rate."""
+    answer_res = {
+        "question": "Q?",
+        "answer": "Answer [S99].",
+        "citations": [{"label": "S99", "chunk_id": "c99"}],
+        "insufficient_evidence": False,
+    }
+    metrics = answer_grounding_metrics(answer_res, valid_labels={"S1", "S2"})
+    assert metrics["citation_validity_rate"] == 0.0
+
+    # Mixed valid and fabricated
+    answer_res_mixed = {
+        "question": "Q?",
+        "answer": "Answer [S1] and [S99].",
+        "citations": [{"label": "S1", "chunk_id": "c1"}, {"label": "S99", "chunk_id": "c99"}],
+        "insufficient_evidence": False,
+    }
+    metrics_mixed = answer_grounding_metrics(answer_res_mixed, valid_labels={"S1", "S2"})
+    assert metrics_mixed["citation_validity_rate"] == pytest.approx(0.5)
+
+
+def test_answer_grounding_metrics_malformed_citation_entries():
+    """Malformed entries (non-dict, missing label, missing/empty chunk_id) must not inflate metrics."""
+    answer_res = {
+        "question": "Q?",
+        "answer": "Answer.",
+        "citations": [
+            None,
+            "not-a-dict",
+            {},
+            {"label": "", "chunk_id": "c1"},
+            {"label": "S1", "chunk_id": ""},
+            {"label": "S1", "chunk_id": "c1"},  # exactly one valid citation
+        ],
+        "insufficient_evidence": False,
+    }
+    metrics = answer_grounding_metrics(answer_res)
+    assert metrics["citation_count"] == 1
+    assert metrics["has_citations"] is True
+    assert metrics["cited_chunk_ids"] == ["c1"]
+
+
+def test_answer_grounding_metrics_empty_citation_list():
+    """Empty citation list must report zero count, False has_citations, and None validity."""
+    answer_res = {
+        "question": "Q?",
+        "answer": "Answer without citations.",
+        "citations": [],
+        "insufficient_evidence": False,
+    }
+    metrics = answer_grounding_metrics(answer_res, valid_labels={"S1"})
+    assert metrics["citation_count"] == 0
+    assert metrics["has_citations"] is False
+    assert metrics["cited_chunk_ids"] == []
+    assert metrics["citation_validity_rate"] is None
+
+
+def test_evaluate_answer_generator_batch():
+    class FakeGenerator:
+        def answer(self, question, top_k=5, filters=None):
+            if "unknown" in question:
+                return {
+                    "question": question,
+                    "answer": "Insufficient evidence",
+                    "citations": [],
+                    "insufficient_evidence": True,
+                }
+            return {
+                "question": question,
+                "answer": f"Answer for {question} [S1]",
+                "citations": [{"label": "S1", "chunk_id": "c1"}],
+                "insufficient_evidence": False,
+                "verification": {"verified": True, "verification_available": True},
+            }
+
+    test_cases = [
+        {
+            "question": "What is Apple revenue?",
+            "relevant_chunk_ids": ["c1"],
+            "expected_insufficient": False,
+        },
+        {
+            "question": "What is an unknown metric?",
+            "relevant_chunk_ids": [],
+            "expected_insufficient": True,
+        },
+    ]
+
+    report = evaluate_answer_generator(test_cases, FakeGenerator())
+    assert report["total_cases"] == 2
+    assert report["grounded_answers_rate"] == pytest.approx(0.5)
+    assert report["citation_presence_rate"] == pytest.approx(0.5)
+    assert report["insufficient_evidence_accuracy"] == pytest.approx(1.0)
+    assert report["mean_citations_per_answer"] == pytest.approx(0.5)
+    assert len(report["per_case_results"]) == 2
+
+
+def test_evaluate_answer_generator_unevaluated_accuracy_returns_none():
+    """When cases omit expected_insufficient, accuracy must report None, not 1.0."""
+    class FakeGenerator:
+        def answer(self, question, top_k=5, filters=None):
+            return {
+                "question": question,
+                "answer": "Answer [S1]",
+                "citations": [{"label": "S1", "chunk_id": "c1"}],
+                "insufficient_evidence": False,
+            }
+
+    test_cases = [{"question": "What is revenue?"}]  # no expected_insufficient
+    report = evaluate_answer_generator(test_cases, FakeGenerator())
+    assert report["insufficient_evidence_accuracy"] is None
+
+
+def test_evaluate_answer_generator_empty_cases():
+    report = evaluate_answer_generator([], None)
+    assert report["total_cases"] == 0
+    assert report["insufficient_evidence_accuracy"] is None
+    assert report["grounded_answers_rate"] is None
+    assert report["per_case_results"] == []

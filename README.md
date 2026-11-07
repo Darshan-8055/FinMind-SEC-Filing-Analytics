@@ -2,7 +2,7 @@
 
 Agentic Financial Intelligence and SEC Filing Analytics Platform.
 
-## Member 1: Retrieval Architect
+## Member 1: Retrieval & Evidence Generation Architect
 
 Responsibilities:
 
@@ -12,7 +12,10 @@ Responsibilities:
 - Keyword (BM25) retrieval
 - Semantic (dense) retrieval using sentence-transformers
 - Hybrid retrieval using weighted reciprocal-rank fusion
-- Retrieval evaluation — Precision@K, Recall@K, macro-average comparison
+- Evidence-grounded answer generation with trusted citation metadata
+- Robust insufficient-evidence and conflicting-evidence handling
+- Claim-level verification interface (`ClaimVerifier`)
+- Retrieval and answer generation evaluation — Precision@K, Recall@K, Evidence Coverage, Citation Validity Rate, Grounding metrics
 
 ---
 
@@ -20,6 +23,8 @@ Responsibilities:
 
 ```
 src/
+  agents/
+    answer_generator.py   # Grounded answer generation, citations & claim verification
   ingestion/
     narrative_parser.py   # SEC filing text → section-aware chunks
     chunk_adapter.py      # Parser output → shared chunk interface schema
@@ -29,7 +34,7 @@ src/
     semantic_search.py    # Cosine-similarity semantic retrieval
     hybrid_search.py      # Weighted RRF hybrid (dense + sparse)
     qdrant_store.py       # Qdrant vector store wrapper
-    evaluation.py         # Precision@K, Recall@K, macro-average metrics
+    evaluation.py         # Precision@K, Recall@K, grounding & coverage metrics
 
 tests/
   fixtures/
@@ -37,7 +42,7 @@ tests/
   test_*.py               # Automated unit and integration tests
 
 docs/
-  INTERFACES.md           # Shared chunk schema and database mapping contract
+  INTERFACES.md           # Shared chunk schema, database mapping, and integration contract
 
 run_retrieval_evaluation.py   # CLI script: compare all three retrievers
 ```
@@ -92,10 +97,16 @@ The integration tests that require Qdrant connect to `localhost:6333` by default
 
 ## Running tests
 
-Run the full test suite (all retrieval, ingestion, and integration tests):
+Run the full test suite (all retrieval, ingestion, answer generation, and integration tests):
 
 ```powershell
 .venv\Scripts\python.exe -m pytest tests\ -v
+```
+
+Run only the answer generator tests:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests\test_answer_generator.py -v
 ```
 
 Run only the retrieval evaluation tests:
@@ -105,13 +116,13 @@ Run only the retrieval evaluation tests:
 ```
 
 The tests use a `FakeEmbeddingModel` (a deterministic 12-word bag-of-words
-encoder) so they do **not** require downloading a sentence-transformer model or
-connecting to Qdrant.  Integration tests that connect to Qdrant require the
-local Docker service to be running.
+encoder) and mock callables so they do **not** require downloading a
+sentence-transformer model or connecting to external LLM APIs. Integration tests
+against Qdrant use in-memory instances (`:memory:`).
 
 ---
 
-## Minimal usage example
+## Minimal usage examples
 
 ### Ingestion pipeline
 
@@ -163,9 +174,33 @@ semantic_results = semantic_search(query, chunks, model, top_k=3)
 hybrid_results  = hybrid_search(query, chunks, model, top_k=3)
 ```
 
+### Evidence-grounded answer generation
+
+```python
+from src.agents.answer_generator import AnswerGenerator, ClaimVerifier
+
+answer_gen = AnswerGenerator(
+    retrieve=pipeline.search,
+    generate=my_llm_callable,
+    verifier=ClaimVerifier(my_verifier_callable),
+    require_verified_claims=True,
+)
+
+response = answer_gen.answer(
+    "What risks are discussed in Apple's latest filing?",
+    top_k=5,
+    filters={"ticker": "AAPL"},
+)
+
+print("Answer:", response["answer"])
+for citation in response["citations"]:
+    print(f"[{citation['label']}] {citation['ticker']} {citation['section']} ({citation['filing_date']})")
+    print(f"URL: {citation['source_url']}")
+```
+
 ---
 
-## Retrieval evaluation
+## Retrieval & Answer Evaluation
 
 ### Running the evaluation script
 
@@ -173,13 +208,11 @@ hybrid_results  = hybrid_search(query, chunks, model, top_k=3)
 .venv\Scripts\python.exe run_retrieval_evaluation.py
 ```
 
-This evaluates keyword, semantic, and hybrid retrieval against every query in
-`tests/fixtures/retrieval_eval.json` and prints per-query and macro-average
-Precision@K and Recall@K.
-
-> **Important:** The evaluation script downloads the `all-MiniLM-L6-v2` model
-> on first run.  Results come from a **synthetic 4-chunk fixture** and should
-> not be reported as production retrieval quality figures.
+> **Warning — Synthetic Data Disclaimer:**
+> The evaluation script uses a **synthetic 4-chunk fixture** (`tests/fixtures/retrieval_eval.json`).
+> These synthetic fixture results are unit test verification artifacts and **must not be reported as
+> production retrieval quality or real-world accuracy figures**. Production readiness requires validation
+> on real SEC filings.
 
 ### Evaluation API
 
@@ -213,16 +246,26 @@ print(output["macro_average"])
 
 ### Interpreting the metrics
 
-| Metric | Definition | Convention |
+| Metric | Definition | Convention / Undefined Handling |
 |---|---|---|
 | **Precision@K** | Fraction of top-K results that are relevant | 0.0 when result list is empty |
 | **Recall@K** | Fraction of all relevant docs found in top-K | 0.0 when relevant set is empty |
 | **Macro-average** | Mean of per-query metric, equal weight per query | 0.0 when query list is empty |
+| **Evidence Coverage** | Fraction of known relevant chunks cited in answer | 0.0 when relevant set is empty |
+| **Citation Validity Rate** | Fraction of citations that match valid retrieved sources | `None` when no citations are made (undefined) |
+| **Answer Grounding** | Confirms claims are supported by verified evidence | `True` only if claim-verified; `None` if unverified; `False` if insufficient |
 
-Hybrid retrieval combines semantic (dense) and BM25 (sparse) rankings using
-weighted reciprocal-rank fusion (default: `dense_weight=0.7`,
-`sparse_weight=0.3`).  These defaults were not tuned on real data; validate
-before changing them.
+### Citation Integrity vs. Semantic Claim Verification
+
+A key architectural distinction is maintained in FinMind:
+- **Citation Integrity (Syntactic)**: Confirms that citation markers (e.g. `[S1]`) refer to genuine retrieved chunks, removes unknown labels, and builds metadata strictly from trusted source registries. However, citing a source does *not* prove that the generated text is factually entailed by that source.
+- **Claim Verification (Semantic)**: A separate verification layer (`ClaimVerifier`) that evaluates whether individual factual claims in the answer are supported by the cited passages. When `require_verified_claims=True`, an answer whose claims cannot be verified is treated conservatively as insufficient evidence.
+
+### Potential Conflict Detection Limitations
+
+`detect_potential_conflicts()` identifies temporal and reporting-period variances (e.g. chunks spanning multiple filing dates or different fiscal periods for the same company).
+- It does **not** evaluate semantic contradictions or verify factual accuracy.
+- Downstream systems must not treat different filing dates as proven errors or automatically assume the newest filing is correct without examining the user's specific context.
 
 ---
 
@@ -236,30 +279,29 @@ before changing them.
 
 ---
 
-## Shared interface contract
-
-The chunk schema shared between Member 1 (retrieval) and other team members is
-documented in [`docs/INTERFACES.md`](docs/INTERFACES.md).
-
-Required chunk fields: `chunk_id`, `company_name`, `ticker`, `form_type`,
-`filing_date`, `section`, `text`, `source_url`.
-
-Optional field: `period_end` (string or `None`).
-
----
-
 ## Real-data validation
 
 Integration tests that run against a live Qdrant instance are in
 `tests/test_qdrant_store.py`, `tests/test_ingestion_retrieval_integration.py`,
 and `tests/test_semantic_ingestion_integration.py`.
 
-**Outstanding:** End-to-end validation against real SEC filing documents has not
-been performed.  The evaluation fixture uses four synthetic chunks.  To validate
-with real data:
+**Outstanding Requirement:** End-to-end validation against real SEC filing documents
+has not yet been performed on production datasets. The project does not claim production
+readiness without real-data validation. To validate with real data:
 
-1. Obtain SEC 10-K filings (e.g., from SEC EDGAR).
-2. Run `FilingIngestionPipeline.ingest_filing()` to parse and store them.
-3. Build a relevance judgement file in the same format as
-   `tests/fixtures/retrieval_eval.json`.
-4. Run `evaluate_all_queries()` and inspect the macro-average results.
+1. Obtain official SEC 10-K / 10-Q filings from SEC EDGAR.
+2. Ingest filings through `FilingIngestionPipeline.ingest_filing()` into a live Qdrant collection.
+3. Build a comprehensive relevance and ground-truth benchmark beyond the 4-chunk synthetic fixture.
+4. Execute `evaluate_all_queries()` and `evaluate_answer_generator()` to measure macro-average Precision@K, Recall@K, Evidence Coverage, and Grounding Rates on real filings.
+
+---
+
+## Shared interface contract
+
+The chunk schema and integration contract shared between Member 1 and downstream
+members is documented in [`docs/INTERFACES.md`](docs/INTERFACES.md).
+
+Member 2 owns the PostgreSQL database schema and mapping. Required chunk fields:
+`chunk_id`, `company_name`, `ticker`, `form_type`, `filing_date`, `section`, `text`, `source_url`.
+Optional field: `period_end` (string or `None`).
+All fields are preserved intact in citations and Qdrant vector storage.
