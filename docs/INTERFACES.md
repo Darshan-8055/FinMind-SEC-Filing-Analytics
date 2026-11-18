@@ -117,17 +117,39 @@ Filing HTML / Text
        └──► QdrantChunkStore stores payload & embeddings
        │
        ▼
-Search API (`pipeline.search(query, top_k=5, filters={"ticker": "AAPL"})`)
-       └──► Cosine vector similarity search over Qdrant
+Search APIs:
+- Dense vector search: `pipeline.search(query, top_k=5, filters={"ticker": "AAPL"})`
+- Scalable hybrid search: `pipeline.hybrid_search(query, top_k=5, filters={"ticker": "AAPL"})`
 ```
 
 ### Retrieval Methods Provided
 
-1. **Keyword Retrieval** (`keyword_search`): BM25 term-matching over chunk text.
+1. **Keyword Retrieval** (`keyword_search`): In-memory BM25 term-matching over chunk text.
 2. **Semantic Retrieval** (`semantic_search` / `pipeline.search`): Dense embeddings with cosine similarity.
-3. **Hybrid Retrieval** (`hybrid_search`): Weighted Reciprocal Rank Fusion (RRF) combining dense and BM25 candidate pools.
+3. **In-Memory Hybrid Retrieval** (`hybrid_search`): Standalone weighted Reciprocal Rank Fusion (RRF) over in-memory chunk sequences.
+4. **Qdrant-Backed Hybrid Retrieval** (`pipeline.hybrid_search`):
+   - Combines Qdrant dense vector search with a persistent SQLite-backed BM25 sparse index (`SparseKeywordIndex`).
+   - **Default Index Storage:** Anchored to project root at `data/sparse_index.db` (auto-creates parent directory). Ephemeral `:memory:` databases are supported for isolated tests.
+   - **Lifecycle States:** Tracked in `index_meta` table (`status`):
+     - `uninitialized`: New database with schema created but zero chunks indexed (cannot participate in search until populated).
+     - `ready`: Synchronized, verified index ready for hybrid and sparse search.
+     - `building`: Staging rebuild actively in progress.
+     - `stale`: Reconciliation recommended or rebuild interrupted; still permits sparse-only queries over previously verified data during outages, while logging warnings.
+     - `failed`: Fatal disk/write error; excluded from search.
+   - **Reconciliation & Freshness:**
+     - `pipeline.check_reconciliation_needed()` checks status and performs an $O(1)$ preliminary count check against Qdrant (`points_count` vs `chunk_count`).
+     - *Important limitation:* Count equality is only a preliminary sanity check and does not guarantee content equality.
+     - Explicit full reconciliation is performed on demand via `sync_from_store(store)` using staging tables (`documents_staging`, `postings_staging`), preserving the last-known-good index if synchronization fails mid-flight.
+   - **Branch Fallback & Weight Enforcement:**
+     - Respects caller weights strictly: if `dense_weight=0`, dense retrieval is disabled and will **never** activate as fallback. If `sparse_weight=0`, sparse retrieval is disabled and will **never** activate as fallback.
+     - If an enabled branch fails, the surviving enabled branch is normalized to weight 1.0. If no enabled branch succeeds, returns `[]`.
+   - **Qdrant Outage Resilience:** SQLite stores complete chunk payloads (`text`, `source_url`, `ticker`, etc.), allowing sparse-only retrieval to return complete, valid chunk mappings even when Qdrant is completely offline.
+   - **Metadata & Filtration:** Preserves all 8 mandatory fields, `period_end` (optional), and traceability fields (`filename`, `chunk_index`). Enforces symmetric filtering across both branches.
+   - **Exact RRF Fusion:** `RRF(c) = W_dense / (rrf_k + r_dense) + W_sparse / (rrf_k + r_sparse)` with deterministic tie-breaking (hybrid score $\to$ semantic score $\to$ BM25 score $\to$ chunk ID).
 
 ---
+
+
 
 ## 9. Evidence-Grounded Answer Generator Interface
 

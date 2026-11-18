@@ -199,7 +199,45 @@ class QdrantChunkStore:
         results: list[dict[str, Any]] = []
         for point in response.points:
             payload = dict(point.payload or {})
+            if "period_end" not in payload:
+                payload["period_end"] = None
             payload["semantic_score"] = float(point.score)
             results.append(payload)
 
+        return results
+
+    def get_chunks_by_ids(
+        self,
+        chunk_ids: Sequence[str],
+    ) -> list[dict[str, Any]]:
+        """Retrieve specific chunks by chunk_id from Qdrant without scanning the corpus.
+
+        Uses deterministic UUIDv5 point IDs. Safely handles missing IDs by returning
+        only those chunks that exist in the collection, preserving all metadata fields.
+        """
+        if not chunk_ids:
+            return []
+
+        if not self.client.collection_exists(self.collection_name):
+            return []
+
+        clean_ids = [str(cid).strip() for cid in chunk_ids if str(cid).strip()]
+        if not clean_ids:
+            return []
+
+        point_ids = [_point_id(cid) for cid in clean_ids]
+        records = self.client.retrieve(
+            collection_name=self.collection_name,
+            ids=point_ids,
+            with_payload=True,
+            with_vectors=False,
+        )
+
+        results: list[dict[str, Any]] = []
+        for record in records:
+            payload = dict(record.payload or {})
+            if "chunk_id" in payload:
+                if "period_end" not in payload:
+                    payload["period_end"] = None
+                results.append(payload)
         return results

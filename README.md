@@ -33,6 +33,7 @@ src/
     keyword_search.py     # BM25-based keyword retrieval
     semantic_search.py    # Cosine-similarity semantic retrieval
     hybrid_search.py      # Weighted RRF hybrid (dense + sparse)
+    sparse_index.py       # SQLite-backed persistent BM25 sparse index
     qdrant_store.py       # Qdrant vector store wrapper
     evaluation.py         # Precision@K, Recall@K, grounding & coverage metrics
 
@@ -45,6 +46,7 @@ docs/
   INTERFACES.md           # Shared chunk schema, database mapping, and integration contract
 
 run_retrieval_evaluation.py   # CLI script: compare all three retrievers
+
 ```
 
 ---
@@ -115,6 +117,13 @@ Run only the retrieval evaluation tests:
 .venv\Scripts\python.exe -m pytest tests\test_retrieval_evaluation.py -v
 ```
 
+Run the Qdrant hybrid retrieval tests:
+
+```powershell
+.venv\Scripts\python.exe -m pytest tests\test_qdrant_hybrid_search.py -v
+```
+
+
 The tests use a `FakeEmbeddingModel` (a deterministic 12-word bag-of-words
 encoder) and mock callables so they do **not** require downloading a
 sentence-transformer model or connecting to external LLM APIs. Integration tests
@@ -174,7 +183,51 @@ semantic_results = semantic_search(query, chunks, model, top_k=3)
 hybrid_results  = hybrid_search(query, chunks, model, top_k=3)
 ```
 
+### Qdrant-backed scalable hybrid retrieval
+
+```python
+from src.retrieval.qdrant_store import QdrantChunkStore
+from src.retrieval.sparse_index import SparseKeywordIndex
+from src.ingestion.pipeline import FilingIngestionPipeline
+
+# Default pipeline automatically connects to persistent SQLite at data/sparse_index.db:
+pipeline = FilingIngestionPipeline(store, model)
+
+# Or pass custom path / in-memory index for tests:
+# pipeline = FilingIngestionPipeline(store, model, SparseKeywordIndex(":memory:"))
+
+# Ingest filings via pipeline (synchronously populates Qdrant and SQLite sparse index)
+pipeline.ingest_filing(text, filename="aapl-10k.txt", ...)
+
+# Check index synchronization status (preliminary count check against Qdrant):
+needed, reason = pipeline.check_reconciliation_needed()
+if needed:
+    print(f"Reconciliation recommended: {reason}")
+    pipeline.sparse_index.sync_from_store(pipeline.store)
+
+# Scalable hybrid search combining dense vectors and BM25 via Reciprocal Rank Fusion:
+results = pipeline.hybrid_search(
+    "supply chain disruptions and tariffs",
+    top_k=5,
+    filters={"ticker": "AAPL", "form_type": "10-K"},
+    dense_weight=0.7,
+    sparse_weight=0.3,
+)
+
+for r in results:
+    print(f"[{r['ticker']}] {r['section']} (Hybrid: {r['hybrid_score']:.4f}, Dense: {r['semantic_score']:.4f}, BM25: {r['bm25_score']:.4f})")
+```
+
+**Key Architectural Features:**
+- **Persistent Storage:** Default SQLite database anchored to project root at `data/sparse_index.db`.
+- **Lifecycle States:** `uninitialized` (fresh, empty), `ready` (synchronized), `building` (staging rebuild in progress), `stale` (reconciliation needed or interrupted), `failed` (fatal write error).
+- **Outage Resilience:** SQLite stores full chunk payloads so sparse-only retrieval can return complete chunk records even during total Qdrant service downtime.
+- **Reconciliation:** Preliminary $O(1)$ point-count check; full reconciliation via `sync_from_store()` uses staging tables and preserves the last-known-good index on error. Note that point-count equality is only a sanity check and does not guarantee content equality.
+- **Strict Branch Control:** Setting `dense_weight=0` or `sparse_weight=0` disables that branch completely; disabled branches are never activated as fallbacks.
+
+
 ### Evidence-grounded answer generation
+
 
 ```python
 from src.agents.answer_generator import AnswerGenerator, ClaimVerifier
