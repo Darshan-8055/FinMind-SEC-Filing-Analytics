@@ -20,6 +20,9 @@ Results are produced from the synthetic fixture in
 chunk set and should not be reported as production retrieval quality figures.
 """
 
+import os
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+
 import json
 from pathlib import Path
 
@@ -57,6 +60,7 @@ for entry in output["per_query"]:
             f"  {method:<{LABEL_WIDTH}}"
             f"  Precision@{K}: {m['precision_at_k']:.3f}"
             f"  Recall@{K}: {m['recall_at_k']:.3f}"
+            f"  RR@{K}: {m.get('reciprocal_rank_at_k', 0.0):.3f}"
             f"  Retrieved: {m['retrieved_chunk_ids']}"
         )
     print()
@@ -69,6 +73,7 @@ for method in METHODS:
         f"  {method:<{LABEL_WIDTH}}"
         f"  Precision@{K}: {macro['precision_at_k']:.3f}"
         f"  Recall@{K}: {macro['recall_at_k']:.3f}"
+        f"  MRR@{K}: {macro.get('mrr_at_k', 0.0):.3f}"
     )
 
 print()

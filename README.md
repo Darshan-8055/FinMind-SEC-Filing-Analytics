@@ -338,14 +338,60 @@ Integration tests that run against a live Qdrant instance are in
 `tests/test_qdrant_store.py`, `tests/test_ingestion_retrieval_integration.py`,
 and `tests/test_semantic_ingestion_integration.py`.
 
-**Outstanding Requirement:** End-to-end validation against real SEC filing documents
-has not yet been performed on production datasets. The project does not claim production
-readiness without real-data validation. To validate with real data:
+### Phase 2 Real SEC Filing Retrieval Benchmark
 
-1. Obtain official SEC 10-K / 10-Q filings from SEC EDGAR.
-2. Ingest filings through `FilingIngestionPipeline.ingest_filing()` into a live Qdrant collection.
-3. Build a comprehensive relevance and ground-truth benchmark beyond the 4-chunk synthetic fixture.
-4. Execute `evaluate_all_queries()` and `evaluate_answer_generator()` to measure macro-average Precision@K, Recall@K, Evidence Coverage, and Grounding Rates on real filings.
+An authentic SEC filing retrieval benchmark was constructed and evaluated in Phase 2 to validate retrieval quality on real financial disclosures:
+
+- **8 Authentic SEC Filings**: 10-K and 10-Q reports from 4 major companies (Apple, Microsoft, Amazon, and NVIDIA).
+- **593 Parsed Chunks**: Extracted and indexed using the standard chunk schema and deterministic chunk IDs.
+- **54 Evaluation Queries**: 42 answerable queries (each verified with verbatim supporting quotes and relevant chunk IDs) and 12 unanswerable queries (assessing handling of non-disclosed metrics).
+- **Retrieval Configurations**: Dense-only (`dense=1.0, sparse=0.0`), Sparse-only (`dense=0.0, sparse=1.0`), and Hybrid (`dense=0.7, sparse=0.3` with RRF fusion, $k_{\text{rrf}}=60$).
+- **Statistical Comparisons**: Nine paired statistical comparisons using 10,000-replicate paired bootstrap confidence intervals (seed 42) and two-sided paired Wilcoxon signed-rank tests with family-wise Holm-Bonferroni correction across all nine tests.
+
+For detailed dataset documentation and provenance, see [`benchmarks/sec_filings/README.md`](benchmarks/sec_filings/README.md).
+For the complete statistical evaluation, paired comparisons, and domain findings, see [`benchmarks/sec_filings/results/final_benchmark_report.md`](benchmarks/sec_filings/results/final_benchmark_report.md).
+
+---
+
+## SEC Benchmark Execution
+
+To execute or reproduce the benchmark:
+
+### 1. Environment & Dependencies
+
+- Python 3.10 or later in a virtual environment (`.venv`).
+- Core dependencies declared in `pyproject.toml` / `requirements.txt`: `sentence-transformers>=3.0`, `qdrant-client>=1.9`, `rank-bm25>=0.2.2`, `tiktoken>=0.5`, `unstructured>=0.10`.
+- SciPy enables Wilcoxon signed-rank statistical testing (the evaluation pipeline includes a graceful fallback if SciPy is unavailable):
+
+```powershell
+python -m pip install scipy
+```
+
+- The embedding model `sentence-transformers/all-MiniLM-L6-v2` (384-dimensional vectors) must be available in the local HuggingFace cache.
+
+### 2. Offline Execution
+
+To enforce offline execution without external network calls to HuggingFace:
+
+```powershell
+$env:HF_HUB_OFFLINE = "1"
+```
+
+### 3. Run Benchmark Command
+
+Execute the benchmark runner script:
+
+```powershell
+.venv\Scripts\python.exe run_sec_benchmark.py
+```
+
+### 4. Benchmark Artifact Locations
+
+- **Result JSON files**: `benchmarks/sec_filings/results/dense_results.json`, `sparse_results.json`, `hybrid_results.json`.
+- **Statistical Analysis Payload**: `benchmarks/sec_filings/results/statistical_analysis.json`.
+- **Final Markdown Report**: `benchmarks/sec_filings/results/final_benchmark_report.md`.
+- **Isolated SQLite Benchmark Store**: `benchmarks/sec_filings/eval_sparse_index.db` (segregated from production `data/sparse_index.db`).
+
 
 ---
 

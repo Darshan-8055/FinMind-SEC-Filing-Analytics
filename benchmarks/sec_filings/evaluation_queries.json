@@ -1,0 +1,626 @@
+[
+  {
+    "query_id": "SEC_Q001",
+    "query": "What types of hardware products does Apple design, manufacture, and market?",
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "rationale": "Chunk 3 explicitly lists Apple's hardware product categories including smartphones, personal computers, tablets, wearables, and accessories.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2025-10-31:aapl-20250927.htm:3"
+    ],
+    "evidence_quote": "Company Background The Company designs, manufactures and markets smartphones, personal computers, tablets, wearables and accessories, and sells a variety of related services."
+  },
+  {
+    "query_id": "SEC_Q002",
+    "query": "What payment services does Apple offer to consumers?",
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "rationale": "Chunk 3 details Apple's payment offerings including Apple Card and Apple Pay.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2025-10-31:aapl-20250927.htm:3"
+    ],
+    "evidence_quote": "Payment Services The Company offers payment services, including Apple Card\u00ae, a co-branded credit card, and Apple Pay\u00ae, a cashless payment service."
+  },
+  {
+    "query_id": "SEC_Q003",
+    "query": "What five geographic reportable segments comprise Apple's business?",
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "rationale": "Chunk 3 defines Apple's five geographic reportable segments.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2025-10-31:aapl-20250927.htm:3"
+    ],
+    "evidence_quote": "The Company\u2019s reportable segments consist of the Americas, Europe, Greater China, Japan and Rest of Asia Pacific."
+  },
+  {
+    "query_id": "SEC_Q004",
+    "query": "What proportion of Apple's net sales in 2025 came through direct versus indirect distribution channels?",
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "rationale": "Chunk 4 reports that direct channels accounted for 40% and indirect channels accounted for 60% of total net sales in 2025.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2025-10-31:aapl-20250927.htm:4"
+    ],
+    "evidence_quote": "During 2025, the Company\u2019s net sales through its direct and indirect distribution channels accounted for 40% and 60%, respectively, of total net sales."
+  },
+  {
+    "query_id": "SEC_Q005",
+    "query": "What were the drivers of Apple's Americas segment net sales increase in 2025?",
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "rationale": "Chunk 39 explains that higher net sales of iPhone and Services drove the Americas segment sales growth.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2025-10-31:aapl-20250927.htm:39"
+    ],
+    "evidence_quote": "Americas net sales increased during 2025 compared to 2024 primarily due to higher net sales of iPhone and Services."
+  },
+  {
+    "query_id": "SEC_Q006",
+    "query": "Why did Apple's Services net sales increase in 2025 compared to 2024?",
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "rationale": "Chunk 40 details that Services sales growth was driven by advertising, the App Store, and cloud services.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2025-10-31:aapl-20250927.htm:40"
+    ],
+    "evidence_quote": "Services net sales increased during 2025 compared to 2024 primarily due to higher net sales from advertising, the App Store and cloud services."
+  },
+  {
+    "query_id": "SEC_Q007",
+    "query": "Why does Apple historically experience higher net sales in its first fiscal quarter?",
+    "ticker": "AAPL",
+    "form_type": "10-Q",
+    "rationale": "Chunk 5 explains business seasonality and higher first-quarter net sales due to holiday demand.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2026-07-31:aapl-20260627.htm:5"
+    ],
+    "evidence_quote": "Business Seasonality and Product Introductions The Company has historically experienced higher net sales in its first quarter compared to other quarters in its fiscal year due in part to seasonal holiday demand."
+  },
+  {
+    "query_id": "SEC_Q008",
+    "query": "How do product and service introductions affect Apple's financial results?",
+    "ticker": "AAPL",
+    "form_type": "10-Q",
+    "rationale": "Chunk 5 notes the direct impact of product introductions on net sales, cost of sales, and operating expenses.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2026-07-31:aapl-20260627.htm:5"
+    ],
+    "evidence_quote": "Additionally, new product and service introductions can significantly impact net sales, cost of sales and operating expenses."
+  },
+  {
+    "query_id": "SEC_Q009",
+    "query": "What drove Apple's Europe net sales increase in the third quarter and first nine months of 2026?",
+    "ticker": "AAPL",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 explains that Europe sales growth was driven by higher sales of iPhone, Services, and Mac.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2026-07-31:aapl-20260627.htm:7"
+    ],
+    "evidence_quote": "Europe Europe net sales increased during the third quarter and first nine months of 2026 compared to the same periods in 2025 primarily due to higher net sales of iPhone, Services and Mac."
+  },
+  {
+    "query_id": "SEC_Q010",
+    "query": "What drove the net sales increase in Greater China for Apple during the third quarter of 2026?",
+    "ticker": "AAPL",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 reports higher net sales of iPhone as the driver of Greater China net sales growth.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2026-07-31:aapl-20260627.htm:7"
+    ],
+    "evidence_quote": "Greater China Greater China net sales increased during the third quarter and first nine months of 2026 compared to the same periods in 2025 primarily due to higher net sales of iPhone."
+  },
+  {
+    "query_id": "SEC_Q011",
+    "query": "What factors caused Apple's Japan net sales to increase in the third quarter and first nine months of 2026?",
+    "ticker": "AAPL",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 documents that higher iPhone sales drove Japan net sales growth.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AAPL:2026-07-31:aapl-20260627.htm:7"
+    ],
+    "evidence_quote": "Japan Japan net sales increased during the third quarter and first nine months of 2026 compared to the same periods in 2025 due to higher net sales of iPhone."
+  },
+  {
+    "query_id": "SEC_Q012",
+    "query": "What foundational products and services does Microsoft develop and support?",
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "rationale": "Chunk 3 provides Microsoft's founding date and core product/service offerings.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-07-29:msft-20260630.htm:3"
+    ],
+    "evidence_quote": "What We Offer Founded in 1975, we develop and support software, services, devices, and solutions that deliver new value for customers and help people and businesses realize their full potential."
+  },
+  {
+    "query_id": "SEC_Q013",
+    "query": "What cloud-based solutions and support does Microsoft provide to customers?",
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "rationale": "Chunk 3 describes Microsoft's cloud-based solutions and consulting capabilities.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-07-29:msft-20260630.htm:3"
+    ],
+    "evidence_quote": "We offer an array of services, including cloud-based solutions that provide customers with AI, software, services, platforms, and content, and we provide solution support and consulting services."
+  },
+  {
+    "query_id": "SEC_Q014",
+    "query": "What benefits does the Microsoft Cloud provide across the technology stack?",
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "rationale": "Chunk 4 outlines the key architectural and business benefits delivered by the Microsoft Cloud.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-07-29:msft-20260630.htm:4"
+    ],
+    "evidence_quote": "The Microsoft Cloud provides integration across the technology stack while offering openness, improving time to value, reducing costs, and increasing agility."
+  },
+  {
+    "query_id": "SEC_Q015",
+    "query": "What integrated security areas does Microsoft address across multi-cloud and device assets?",
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "rationale": "Chunk 4 specifies Microsoft's security, compliance, identity, management, and privacy offerings.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-07-29:msft-20260630.htm:4"
+    ],
+    "evidence_quote": "We prioritize security above all else and we offer our customers integrated AI-driven products addressing security, compliance, identity, management, and privacy across customers\u2019 multi-cloud, application, and device assets."
+  },
+  {
+    "query_id": "SEC_Q016",
+    "query": "What digital workloads does Microsoft's intelligent cloud and intelligent edge platform support?",
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "rationale": "Chunk 4 details the workloads supported by the intelligent cloud and edge platforms.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-07-29:msft-20260630.htm:4"
+    ],
+    "evidence_quote": "Build the intelligent cloud and intelligent edge platform to provide a foundation for our customers\u2019 digital workloads, including hybrid consistency, developer productivity, data and AI capabilities, and trusted security and compliance."
+  },
+  {
+    "query_id": "SEC_Q017",
+    "query": "By what percentage did Microsoft's search and advertising revenue excluding TAC increase?",
+    "ticker": "MSFT",
+    "form_type": "10-Q",
+    "rationale": "Chunk 28 provides the 12% growth figure for search and advertising revenue ex-TAC.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-10-28:msft-20260930.htm:28"
+    ],
+    "evidence_quote": "Search and advertising revenue excluding traffic acquisition costs increased 12%."
+  },
+  {
+    "query_id": "SEC_Q018",
+    "query": "What is Microsoft's relationship with OpenAI regarding investment and revenue sharing?",
+    "ticker": "MSFT",
+    "form_type": "10-Q",
+    "rationale": "Chunk 30 confirms Microsoft is a major investor in OpenAI receiving revenue-sharing payments.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-10-28:msft-20260930.htm:30"
+    ],
+    "evidence_quote": "Microsoft is a major investor in OpenAI and will continue to receive revenue-sharing payments."
+  },
+  {
+    "query_id": "SEC_Q019",
+    "query": "How will Microsoft's datacenter and infrastructure investments impact operating costs and margins?",
+    "ticker": "MSFT",
+    "form_type": "10-Q",
+    "rationale": "Chunk 30 discusses the margin and cost implications of ongoing cloud and datacenter capex.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-10-28:msft-20260930.htm:30"
+    ],
+    "evidence_quote": "The investments we are making in cloud and datacenter infrastructure and devices will continue to increase our operating costs and may decrease our operating margins."
+  },
+  {
+    "query_id": "SEC_Q020",
+    "query": "Why does Microsoft continue to expand its datacenter locations and server capacity?",
+    "ticker": "MSFT",
+    "form_type": "10-Q",
+    "rationale": "Chunk 30 attributes datacenter and server capacity expansion to surging demand for AI services.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-10-28:msft-20260930.htm:30"
+    ],
+    "evidence_quote": "We continue to identify and evaluate opportunities to expand our datacenter locations and increase our server capacity to meet the evolving needs of our customers, particularly given the growing demand for AI services."
+  },
+  {
+    "query_id": "SEC_Q021",
+    "query": "What competitive dynamics does Microsoft face in its software and cloud-based services markets?",
+    "ticker": "MSFT",
+    "form_type": "10-Q",
+    "rationale": "Chunk 30 describes the competitive landscape in software and cloud services.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "MSFT:2026-10-28:msft-20260930.htm:30"
+    ],
+    "evidence_quote": "Economic Conditions, Challenges, and Risks The markets for software, devices, and cloud-based services are dynamic and highly competitive."
+  },
+  {
+    "query_id": "SEC_Q022",
+    "query": "What customer sets does Amazon serve across each of its operating segments?",
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "rationale": "Chunk 2 names Amazon's primary customer groups across its segments.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-02-06:amzn-20251231.htm:2"
+    ],
+    "evidence_quote": "In each of our segments, we serve our primary customer sets, consisting of consumers, sellers, developers, enterprises, content creators, advertisers, and employees."
+  },
+  {
+    "query_id": "SEC_Q023",
+    "query": "What are the three operating segments of Amazon?",
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "rationale": "Chunk 2 identifies Amazon's three segments: North America, International, and AWS.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-02-06:amzn-20251231.htm:2"
+    ],
+    "evidence_quote": "We have organized our operations into three segments: North America, International, and Amazon Web Services (\u201cAWS\u201d)."
+  },
+  {
+    "query_id": "SEC_Q024",
+    "query": "What benefits are included in the Amazon Prime membership subscription?",
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "rationale": "Chunk 2 describes the offerings and benefits included in Amazon Prime.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-02-06:amzn-20251231.htm:2"
+    ],
+    "evidence_quote": "In addition, we offer subscription services such as Amazon Prime, a membership program that includes fast, free shipping on tens of millions of items, access to award-winning movies and series, live sports, and other benefits."
+  },
+  {
+    "query_id": "SEC_Q025",
+    "query": "What advertising services does Amazon provide through programs for sellers and authors?",
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "rationale": "Chunk 2 details Amazon's advertising services, including sponsored ads, display, and video ads.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-02-06:amzn-20251231.htm:2"
+    ],
+    "evidence_quote": "Advertisers We provide advertising services to sellers, vendors, publishers, authors, and others, through programs such as sponsored ads, display, and video advertising."
+  },
+  {
+    "query_id": "SEC_Q026",
+    "query": "What leadership roles has Andy Jassy held at Amazon and AWS?",
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "rationale": "Chunk 5 summarizes Andy Jassy's executive history at Amazon and AWS.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-02-06:amzn-20251231.htm:5"
+    ],
+    "evidence_quote": "Jassy has served as President and Chief Executive Officer since July 2021, CEO Amazon Web Services from April 2016 until July 2021, and Senior Vice President, Amazon Web Services, from April 2006 until April 2016."
+  },
+  {
+    "query_id": "SEC_Q027",
+    "query": "What caused the increase in Amazon's operating cash flow for the trailing twelve months ended September 30, 2026?",
+    "ticker": "AMZN",
+    "form_type": "10-Q",
+    "rationale": "Chunk 8 explains the drivers of trailing-twelve-month operating cash flow growth.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-10-30:amzn-20260930.htm:8"
+    ],
+    "evidence_quote": "The increase in operating cash flow for the trailing twelve months ended September 30, 2026, compared to the comparable prior year period, was due to an increase in net income, excluding non-cash income and expenses, and changes in working capital."
+  },
+  {
+    "query_id": "SEC_Q028",
+    "query": "What do product sales represent in Amazon's revenue reporting?",
+    "ticker": "AMZN",
+    "form_type": "10-Q",
+    "rationale": "Chunk 11 defines the accounting composition of product sales.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-10-30:amzn-20260930.htm:11"
+    ],
+    "evidence_quote": "Product sales represent revenue from the sale of products and related shipping fees and digital media content where we record revenue gross."
+  },
+  {
+    "query_id": "SEC_Q029",
+    "query": "What revenue sources are included under Amazon's service sales?",
+    "ticker": "AMZN",
+    "form_type": "10-Q",
+    "rationale": "Chunk 11 lists the exact revenue streams categorised as service sales.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-10-30:amzn-20260930.htm:11"
+    ],
+    "evidence_quote": "Service sales primarily represent third-party seller fees, which include commissions and any related fulfillment and shipping fees, AWS sales, advertising services, Amazon Prime membership fees, and certain digital media content subscriptions."
+  },
+  {
+    "query_id": "SEC_Q030",
+    "query": "What impact did foreign exchange rate fluctuations have on Amazon's net sales in Q3 2026?",
+    "ticker": "AMZN",
+    "form_type": "10-Q",
+    "rationale": "Chunk 12 details the quantitative impact of foreign exchange movements on net sales.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-10-30:amzn-20260930.htm:12"
+    ],
+    "evidence_quote": "Changes in foreign exchange rates reduced net sales by $896 million for Q3 2026, and increased net sales by $2.1 billion for the nine months ended September 30, 2026."
+  },
+  {
+    "query_id": "SEC_Q031",
+    "query": "What key commercial factors drove Amazon's sales growth in the third quarter of 2026?",
+    "ticker": "AMZN",
+    "form_type": "10-Q",
+    "rationale": "Chunk 12 attributes sales growth to unit volume, advertising, and subscription sales.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "AMZN:2026-10-30:amzn-20260930.htm:12"
+    ],
+    "evidence_quote": "The sales growth primarily reflects increased unit sales, including sales by third-party sellers, advertising sales, and subscription services."
+  },
+  {
+    "query_id": "SEC_Q032",
+    "query": "How does NVIDIA position its market identity and datacenter focus in its 10-K?",
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "rationale": "Chunk 4 provides NVIDIA's core business positioning as a datacenter-scale AI infrastructure company.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-02-25:nvda-20260125.htm:4"
+    ],
+    "evidence_quote": "NVIDIA is now a data center scale AI infrastructure company reshaping all industries."
+  },
+  {
+    "query_id": "SEC_Q033",
+    "query": "What is NVIDIA's platform strategy combining hardware, systems, and models?",
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "rationale": "Chunk 4 outlines NVIDIA's full-stack platform strategy.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-02-25:nvda-20260125.htm:4"
+    ],
+    "evidence_quote": "NVIDIA has a platform strategy, bringing together hardware, systems, software, algorithms, libraries, AI models and training data sets, and services to create unique value for the markets we serve."
+  },
+  {
+    "query_id": "SEC_Q034",
+    "query": "How did the 2020 Mellanox acquisition expand NVIDIA's product offerings and architecture?",
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "rationale": "Chunk 5 describes how the Mellanox acquisition added networking and created the DPU processor category.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-02-25:nvda-20260125.htm:5"
+    ],
+    "evidence_quote": "Our acquisition of Mellanox in 2020 expanded our offerings to include networking, enabled our platforms to be data center scale, and led to the introduction of a new processor class \u2013 the data processing unit, or DPU."
+  },
+  {
+    "query_id": "SEC_Q035",
+    "query": "What processor class and architecture did NVIDIA introduce in 2023 with Grace?",
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "rationale": "Chunk 5 explains the launch and purpose of the Grace datacenter CPU.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-02-25:nvda-20260125.htm:5"
+    ],
+    "evidence_quote": "In 2023, we introduced our first data center CPU, Grace, built for giant-scale AI and high-performance computing, or HPC."
+  },
+  {
+    "query_id": "SEC_Q036",
+    "query": "What is the design and processor composition of the NVIDIA Blackwell architecture?",
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "rationale": "Chunk 5 details the Blackwell design connecting 36 Grace CPUs and 72 Blackwell GPUs.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-02-25:nvda-20260125.htm:5"
+    ],
+    "evidence_quote": "In 2024, we launched the NVIDIA Blackwell architecture \u2013 connecting 36 Grace CPUs and 72 Blackwell GPUs in a data center scale, liquid-cooled design \u2013 for real-time trillion-parameter inference and training."
+  },
+  {
+    "query_id": "SEC_Q037",
+    "query": "How many reportable business segments does NVIDIA have?",
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "rationale": "Chunk 6 states that NVIDIA reports business results in two segments.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-02-25:nvda-20260125.htm:6"
+    ],
+    "evidence_quote": "Our Businesses We report our business results in two segments."
+  },
+  {
+    "query_id": "SEC_Q038",
+    "query": "What are the two operating segments reported by NVIDIA in its quarterly filings?",
+    "ticker": "NVDA",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 confirms Compute & Networking and Graphics as NVIDIA's two operating segments.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-08-26:nvda-20260726.htm:7"
+    ],
+    "evidence_quote": "Our two operating segments are \u201cCompute & Networking\u201d and \u201cGraphics.\u201d Refer to Note 13 of the Notes to Condensed Consolidated Financial Statements in Part I, Item 1 of this Quarterly Report on Form 10-Q for additional information."
+  },
+  {
+    "query_id": "SEC_Q039",
+    "query": "What product category drove NVIDIA's revenue growth in the second quarter and first half of fiscal year 2027?",
+    "ticker": "NVDA",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 attributes revenue growth to datacenter products for accelerated computing and AI.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-08-26:nvda-20260726.htm:7"
+    ],
+    "evidence_quote": "Recent Developments, Future Objectives and Challenges Revenue growth in the second quarter and the first half of fiscal year 2027 was driven by data center products for accelerated computing and AI solutions."
+  },
+  {
+    "query_id": "SEC_Q040",
+    "query": "When did NVIDIA begin production shipments of its Vera Rubin datacenter architecture?",
+    "ticker": "NVDA",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 documents the production shipment timing of the Vera Rubin architecture.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-08-26:nvda-20260726.htm:7"
+    ],
+    "evidence_quote": "Our next-generation Data Center architecture, Vera Rubin, began production shipments in the third quarter of fiscal year 2027."
+  },
+  {
+    "query_id": "SEC_Q041",
+    "query": "Why are land, power, shell, and capital availability critical to deploying NVIDIA AI infrastructure?",
+    "ticker": "NVDA",
+    "form_type": "10-Q",
+    "rationale": "Chunk 7 explains physical infrastructure constraints affecting datacenter buildouts.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-08-26:nvda-20260726.htm:7"
+    ],
+    "evidence_quote": "The availability of land, power, shell, and capital is crucial to support the buildout of a full data center inclusive of NVIDIA AI infrastructure"
+  },
+  {
+    "query_id": "SEC_Q042",
+    "query": "What initiative has NVIDIA undertaken to address customer datacenter capacity and land limitations?",
+    "ticker": "NVDA",
+    "form_type": "10-Q",
+    "rationale": "Chunk 8 describes NVIDIA's guarantees of land, power, shell, and capacity for customers.",
+    "answerable": true,
+    "relevant_chunk_ids": [
+      "NVDA:2026-08-26:nvda-20260726.htm:8"
+    ],
+    "evidence_quote": "We have undertaken initiatives to address these challenges including securing and providing guarantees of land, power, shell, and capacity of select data center infrastructure that customers require to deploy our products."
+  },
+  {
+    "query_id": "SEC_Q043",
+    "query": "What was Apple's total advertising spend specifically for the Apple Vision Pro headset launch?",
+    "answerable": false,
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Apple's 10-K does not disclose product-specific marketing or advertising budgets for Vision Pro."
+  },
+  {
+    "query_id": "SEC_Q044",
+    "query": "What was the total volume of coffee beans purchased by Amazon for Whole Foods in 2025?",
+    "answerable": false,
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Amazon does not report commodity purchase volumes for individual grocery items."
+  },
+  {
+    "query_id": "SEC_Q045",
+    "query": "What was Microsoft's total revenue generated from the sale of Surface Pro keyboards in France?",
+    "answerable": false,
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Microsoft reports More Personal Computing segment data at an aggregated level and does not disclose country-specific peripheral sales."
+  },
+  {
+    "query_id": "SEC_Q046",
+    "query": "How many individual H100 GPUs did NVIDIA ship to ByteDance in fiscal 2026?",
+    "answerable": false,
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: NVIDIA does not disclose customer-specific GPU unit delivery volumes."
+  },
+  {
+    "query_id": "SEC_Q047",
+    "query": "What was Tesla's automotive regulatory credits revenue in the second quarter of 2025?",
+    "answerable": false,
+    "ticker": "TSLA",
+    "form_type": "10-Q",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: The benchmark corpus contains filings only for AAPL, MSFT, AMZN, and NVDA. Tesla filings are not in the corpus."
+  },
+  {
+    "query_id": "SEC_Q048",
+    "query": "What was Apple's total revenue from electric vehicle battery sales in fiscal year 2025?",
+    "answerable": false,
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Apple does not sell electric vehicle batteries or report revenue from such operations."
+  },
+  {
+    "query_id": "SEC_Q049",
+    "query": "What was the average monthly salary of an Amazon warehouse associate in Germany during 2025?",
+    "answerable": false,
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Amazon's 10-K does not disclose granular regional wage rates or employee-level payroll averages."
+  },
+  {
+    "query_id": "SEC_Q050",
+    "query": "What was the exact electricity consumption in megawatt-hours of Microsoft's Quincy data center in 2026?",
+    "answerable": false,
+    "ticker": "MSFT",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Facility-level power consumption in MWh is not reported in Microsoft's SEC financial reports."
+  },
+  {
+    "query_id": "SEC_Q051",
+    "query": "How many units of the Nintendo Switch did NVIDIA manufacture in fiscal year 2026?",
+    "answerable": false,
+    "ticker": "NVDA",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: NVIDIA provides chip architecture to partner devices but does not report partner finished-goods manufacturing counts."
+  },
+  {
+    "query_id": "SEC_Q052",
+    "query": "What was Apple's total expenditure on office stationery across its Cupertino headquarters in fiscal 2025?",
+    "answerable": false,
+    "ticker": "AAPL",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Immaterial sub-category expenses like office stationery are not disclosed in SEC 10-K filings."
+  },
+  {
+    "query_id": "SEC_Q053",
+    "query": "What was Google's YouTube advertising revenue in the third quarter of 2025?",
+    "answerable": false,
+    "ticker": "GOOGL",
+    "form_type": "10-Q",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Alphabet/Google filings are not present in the benchmark corpus."
+  },
+  {
+    "query_id": "SEC_Q054",
+    "query": "How many packages were delivered by Amazon drones in California in 2025?",
+    "answerable": false,
+    "ticker": "AMZN",
+    "form_type": "10-K",
+    "relevant_chunk_ids": [],
+    "evidence_quote": null,
+    "rationale": "Unanswerable: Drone delivery counts by state are not disclosed in Amazon's SEC financial filings."
+  }
+]

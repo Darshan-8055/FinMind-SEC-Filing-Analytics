@@ -1,0 +1,1033 @@
+{
+  "mode": "hybrid",
+  "timestamp": "2026-11-20T15:59:41.094294+00:00",
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_dimension": 384,
+  "qdrant_collection": "benchmark_eval_chunks",
+  "sparse_db_path": "D:\\DEVELOPMENT\\Projects\\Finmind_01\\FinMind-SEC-Filing-Analytics\\benchmarks\\sec_filings\\eval_sparse_index.db",
+  "total_corpus_chunks": 593,
+  "total_queries": 54,
+  "answerable_queries_count": 42,
+  "unanswerable_queries_count": 12,
+  "top_k": 5,
+  "candidate_k": 30,
+  "weights": {
+    "dense_weight": 0.7,
+    "sparse_weight": 0.3
+  },
+  "rrf_k": 60,
+  "metrics": {
+    "precision_at_k": 0.1285714285714286,
+    "recall_at_k": 0.6428571428571429,
+    "mrr_at_k": 0.4722222222222222
+  },
+  "unanswerable_summary": {
+    "total_unanswerable": 12,
+    "queries_with_retrieval": 12,
+    "abstention_tested": false
+  },
+  "per_query_results": [
+    {
+      "query_id": "SEC_Q001",
+      "query": "What types of hardware products does Apple design, manufacture, and market?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2025-10-31:aapl-20250927.htm:17",
+        "AAPL:2025-10-31:aapl-20250927.htm:15",
+        "AAPL:2025-10-31:aapl-20250927.htm:13",
+        "AAPL:2025-10-31:aapl-20250927.htm:22"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:3"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q002",
+      "query": "What payment services does Apple offer to consumers?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:19",
+        "AAPL:2025-10-31:aapl-20250927.htm:3",
+        "AAPL:2025-10-31:aapl-20250927.htm:24",
+        "AAPL:2025-10-31:aapl-20250927.htm:17",
+        "AMZN:2026-02-06:amzn-20251231.htm:35"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:3"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.5
+    },
+    {
+      "query_id": "SEC_Q003",
+      "query": "What five geographic reportable segments comprise Apple's business?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:32",
+        "MSFT:2026-07-29:msft-20260630.htm:63",
+        "AAPL:2025-10-31:aapl-20250927.htm:4",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "MSFT:2026-07-29:msft-20260630.htm:6"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:3"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q004",
+      "query": "What proportion of Apple's net sales in 2025 came through direct versus indirect distribution channels?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:4",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2026-07-31:aapl-20260627.htm:2",
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "NVDA:2026-08-26:nvda-20260726.htm:13"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:4"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q005",
+      "query": "What were the drivers of Apple's Americas segment net sales increase in 2025?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2026-07-31:aapl-20260627.htm:7",
+        "AAPL:2025-10-31:aapl-20250927.htm:39",
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2025-10-31:aapl-20250927.htm:38"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:39"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.3333333333333333
+    },
+    {
+      "query_id": "SEC_Q006",
+      "query": "Why did Apple's Services net sales increase in 2025 compared to 2024?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2026-07-31:aapl-20260627.htm:9",
+        "AMZN:2026-02-06:amzn-20251231.htm:42",
+        "AAPL:2026-07-31:aapl-20260627.htm:2"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:40"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q007",
+      "query": "Why does Apple historically experience higher net sales in its first fiscal quarter?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2026-07-31:aapl-20260627.htm:9",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "NVDA:2026-08-26:nvda-20260726.htm:15"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:5"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q008",
+      "query": "How do product and service introductions affect Apple's financial results?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2025-10-31:aapl-20250927.htm:13",
+        "AAPL:2025-10-31:aapl-20250927.htm:19",
+        "AAPL:2025-10-31:aapl-20250927.htm:24",
+        "AAPL:2025-10-31:aapl-20250927.htm:17"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:5"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q009",
+      "query": "What drove Apple's Europe net sales increase in the third quarter and first nine months of 2026?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2026-07-31:aapl-20260627.htm:7",
+        "AMZN:2026-10-30:amzn-20260930.htm:12",
+        "AAPL:2026-07-31:aapl-20260627.htm:2",
+        "AAPL:2026-07-31:aapl-20260627.htm:9"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.5
+    },
+    {
+      "query_id": "SEC_Q010",
+      "query": "What drove the net sales increase in Greater China for Apple during the third quarter of 2026?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2025-10-31:aapl-20250927.htm:39",
+        "AAPL:2026-07-31:aapl-20260627.htm:6"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q011",
+      "query": "What factors caused Apple's Japan net sales to increase in the third quarter and first nine months of 2026?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2026-07-31:aapl-20260627.htm:9",
+        "AMZN:2026-10-30:amzn-20260930.htm:12",
+        "AAPL:2026-07-31:aapl-20260627.htm:2"
+      ],
+      "relevant_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q012",
+      "query": "What foundational products and services does Microsoft develop and support?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:3",
+        "MSFT:2026-07-29:msft-20260630.htm:9",
+        "MSFT:2026-07-29:msft-20260630.htm:18",
+        "MSFT:2026-07-29:msft-20260630.htm:60",
+        "MSFT:2026-10-28:msft-20260930.htm:33"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:3"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q013",
+      "query": "What cloud-based solutions and support does Microsoft provide to customers?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:3",
+        "MSFT:2026-07-29:msft-20260630.htm:18",
+        "MSFT:2026-07-29:msft-20260630.htm:4",
+        "MSFT:2026-07-29:msft-20260630.htm:10",
+        "MSFT:2026-07-29:msft-20260630.htm:12"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:3"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q014",
+      "query": "What benefits does the Microsoft Cloud provide across the technology stack?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:4",
+        "MSFT:2026-07-29:msft-20260630.htm:68",
+        "MSFT:2026-07-29:msft-20260630.htm:3",
+        "MSFT:2026-07-29:msft-20260630.htm:10",
+        "MSFT:2026-07-29:msft-20260630.htm:66"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:4"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q015",
+      "query": "What integrated security areas does Microsoft address across multi-cloud and device assets?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:4",
+        "MSFT:2026-07-29:msft-20260630.htm:3",
+        "MSFT:2026-07-29:msft-20260630.htm:12",
+        "MSFT:2026-07-29:msft-20260630.htm:5",
+        "MSFT:2026-10-28:msft-20260930.htm:33"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:4"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q016",
+      "query": "What digital workloads does Microsoft's intelligent cloud and intelligent edge platform support?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:4",
+        "MSFT:2026-07-29:msft-20260630.htm:10",
+        "MSFT:2026-07-29:msft-20260630.htm:68",
+        "MSFT:2026-07-29:msft-20260630.htm:3",
+        "NVDA:2026-08-26:nvda-20260726.htm:11"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:4"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q017",
+      "query": "By what percentage did Microsoft's search and advertising revenue excluding TAC increase?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:66",
+        "MSFT:2026-10-28:msft-20260930.htm:36",
+        "MSFT:2026-10-28:msft-20260930.htm:29",
+        "MSFT:2026-07-29:msft-20260630.htm:68",
+        "MSFT:2026-10-28:msft-20260930.htm:34"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-10-28:msft-20260930.htm:28"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q018",
+      "query": "What is Microsoft's relationship with OpenAI regarding investment and revenue sharing?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:61",
+        "MSFT:2026-07-29:msft-20260630.htm:67",
+        "MSFT:2026-10-28:msft-20260930.htm:30",
+        "MSFT:2026-10-28:msft-20260930.htm:34",
+        "MSFT:2026-07-29:msft-20260630.htm:60"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-10-28:msft-20260930.htm:30"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.3333333333333333
+    },
+    {
+      "query_id": "SEC_Q019",
+      "query": "How will Microsoft's datacenter and infrastructure investments impact operating costs and margins?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:68",
+        "MSFT:2026-07-29:msft-20260630.htm:66",
+        "AMZN:2026-10-30:amzn-20260930.htm:15",
+        "MSFT:2026-10-28:msft-20260930.htm:35",
+        "MSFT:2026-07-29:msft-20260630.htm:39"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-10-28:msft-20260930.htm:30"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q020",
+      "query": "Why does Microsoft continue to expand its datacenter locations and server capacity?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:39",
+        "MSFT:2026-07-29:msft-20260630.htm:62",
+        "MSFT:2026-07-29:msft-20260630.htm:68",
+        "MSFT:2026-07-29:msft-20260630.htm:16",
+        "MSFT:2026-07-29:msft-20260630.htm:40"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-10-28:msft-20260930.htm:30"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q021",
+      "query": "What competitive dynamics does Microsoft face in its software and cloud-based services markets?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-10-28:msft-20260930.htm:55",
+        "MSFT:2026-10-28:msft-20260930.htm:30",
+        "MSFT:2026-10-28:msft-20260930.htm:33",
+        "MSFT:2026-07-29:msft-20260630.htm:18",
+        "AAPL:2025-10-31:aapl-20250927.htm:13"
+      ],
+      "relevant_chunk_ids": [
+        "MSFT:2026-10-28:msft-20260930.htm:30"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.5
+    },
+    {
+      "query_id": "SEC_Q022",
+      "query": "What customer sets does Amazon serve across each of its operating segments?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "AAPL:2025-10-31:aapl-20250927.htm:4",
+        "AMZN:2026-02-06:amzn-20251231.htm:44",
+        "AMZN:2026-10-30:amzn-20260930.htm:14",
+        "MSFT:2026-07-29:msft-20260630.htm:18"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q023",
+      "query": "What are the three operating segments of Amazon?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "AMZN:2026-02-06:amzn-20251231.htm:60",
+        "MSFT:2026-07-29:msft-20260630.htm:63",
+        "AMZN:2026-10-30:amzn-20260930.htm:3",
+        "AMZN:2026-10-30:amzn-20260930.htm:2"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q024",
+      "query": "What benefits are included in the Amazon Prime membership subscription?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "AMZN:2026-10-30:amzn-20260930.htm:19",
+        "MSFT:2026-07-29:msft-20260630.htm:13",
+        "AMZN:2026-02-06:amzn-20251231.htm:43",
+        "AMZN:2026-02-06:amzn-20251231.htm:44"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q025",
+      "query": "What advertising services does Amazon provide through programs for sellers and authors?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:3",
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "MSFT:2026-07-29:msft-20260630.htm:18",
+        "MSFT:2026-07-29:msft-20260630.htm:12",
+        "AAPL:2025-10-31:aapl-20250927.htm:19"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.5
+    },
+    {
+      "query_id": "SEC_Q026",
+      "query": "What leadership roles has Andy Jassy held at Amazon and AWS?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:5",
+        "AMZN:2026-02-06:amzn-20251231.htm:72",
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "AMZN:2026-02-06:amzn-20251231.htm:70",
+        "MSFT:2026-07-29:msft-20260630.htm:19"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:5"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q027",
+      "query": "What caused the increase in Amazon's operating cash flow for the trailing twelve months ended September 30, 2026?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:2",
+        "AMZN:2026-10-30:amzn-20260930.htm:3",
+        "AMZN:2026-10-30:amzn-20260930.htm:17",
+        "AMZN:2026-10-30:amzn-20260930.htm:12",
+        "MSFT:2026-10-28:msft-20260930.htm:37"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:8"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q028",
+      "query": "What do product sales represent in Amazon's revenue reporting?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "AMZN:2026-02-06:amzn-20251231.htm:55",
+        "AMZN:2026-02-06:amzn-20251231.htm:60",
+        "AMZN:2026-02-06:amzn-20251231.htm:34",
+        "AMZN:2026-02-06:amzn-20251231.htm:54"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:11"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q029",
+      "query": "What revenue sources are included under Amazon's service sales?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:55",
+        "AMZN:2026-10-30:amzn-20260930.htm:13",
+        "AMZN:2026-02-06:amzn-20251231.htm:2",
+        "AMZN:2026-02-06:amzn-20251231.htm:43",
+        "AMZN:2026-10-30:amzn-20260930.htm:14"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:11"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q030",
+      "query": "What impact did foreign exchange rate fluctuations have on Amazon's net sales in Q3 2026?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:12",
+        "AMZN:2026-10-30:amzn-20260930.htm:19",
+        "AMZN:2026-02-06:amzn-20251231.htm:48",
+        "AMZN:2026-02-06:amzn-20251231.htm:50",
+        "AAPL:2026-07-31:aapl-20260627.htm:7"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:12"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q031",
+      "query": "What key commercial factors drove Amazon's sales growth in the third quarter of 2026?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:19",
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2026-07-31:aapl-20260627.htm:7",
+        "AMZN:2026-10-30:amzn-20260930.htm:14",
+        "AMZN:2026-10-30:amzn-20260930.htm:6"
+      ],
+      "relevant_chunk_ids": [
+        "AMZN:2026-10-30:amzn-20260930.htm:12"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q032",
+      "query": "How does NVIDIA position its market identity and datacenter focus in its 10-K?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:97",
+        "NVDA:2026-02-25:nvda-20260125.htm:3",
+        "NVDA:2026-08-26:nvda-20260726.htm:9"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:4"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q033",
+      "query": "What is NVIDIA's platform strategy combining hardware, systems, and models?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:9",
+        "NVDA:2026-02-25:nvda-20260125.htm:4",
+        "NVDA:2026-02-25:nvda-20260125.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:8",
+        "NVDA:2026-02-25:nvda-20260125.htm:5"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:4"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.5
+    },
+    {
+      "query_id": "SEC_Q034",
+      "query": "How did the 2020 Mellanox acquisition expand NVIDIA's product offerings and architecture?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:9",
+        "NVDA:2026-02-25:nvda-20260125.htm:5",
+        "NVDA:2026-02-25:nvda-20260125.htm:97"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:5"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.25
+    },
+    {
+      "query_id": "SEC_Q035",
+      "query": "What processor class and architecture did NVIDIA introduce in 2023 with Grace?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:5",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:9",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:4"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:5"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q036",
+      "query": "What is the design and processor composition of the NVIDIA Blackwell architecture?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:4",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:5",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:8"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:5"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.3333333333333333
+    },
+    {
+      "query_id": "SEC_Q037",
+      "query": "How many reportable business segments does NVIDIA have?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:63",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:71",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "MSFT:2026-10-28:msft-20260930.htm:32"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:6"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "reciprocal_rank_at_k": 0.0
+    },
+    {
+      "query_id": "SEC_Q038",
+      "query": "What are the two operating segments reported by NVIDIA in its quarterly filings?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "MSFT:2026-07-29:msft-20260630.htm:63",
+        "NVDA:2026-08-26:nvda-20260726.htm:13",
+        "NVDA:2026-02-25:nvda-20260125.htm:2"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q039",
+      "query": "What product category drove NVIDIA's revenue growth in the second quarter and first half of fiscal year 2027?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:13",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:72",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "AAPL:2025-10-31:aapl-20250927.htm:38"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.25
+    },
+    {
+      "query_id": "SEC_Q040",
+      "query": "When did NVIDIA begin production shipments of its Vera Rubin datacenter architecture?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:4",
+        "NVDA:2026-02-25:nvda-20260125.htm:9"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 1.0
+    },
+    {
+      "query_id": "SEC_Q041",
+      "query": "Why are land, power, shell, and capital availability critical to deploying NVIDIA AI infrastructure?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:8",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-08-26:nvda-20260726.htm:9",
+        "MSFT:2026-07-29:msft-20260630.htm:25"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:7"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.5
+    },
+    {
+      "query_id": "SEC_Q042",
+      "query": "What initiative has NVIDIA undertaken to address customer datacenter capacity and land limitations?",
+      "answerable": true,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-08-26:nvda-20260726.htm:8",
+        "NVDA:2026-08-26:nvda-20260726.htm:9",
+        "NVDA:2026-02-25:nvda-20260125.htm:4"
+      ],
+      "relevant_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:8"
+      ],
+      "top_k": 5,
+      "precision_at_k": 0.2,
+      "recall_at_k": 1.0,
+      "reciprocal_rank_at_k": 0.3333333333333333
+    },
+    {
+      "query_id": "SEC_Q043",
+      "query": "What was Apple's total advertising spend specifically for the Apple Vision Pro headset launch?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2025-10-31:aapl-20250927.htm:3",
+        "AAPL:2026-07-31:aapl-20260627.htm:2",
+        "MSFT:2026-07-29:msft-20260630.htm:66"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q044",
+      "query": "What was the total volume of coffee beans purchased by Amazon for Whole Foods in 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AAPL:2026-07-31:aapl-20260627.htm:24",
+        "AMZN:2026-02-06:amzn-20251231.htm:55",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "NVDA:2026-08-26:nvda-20260726.htm:14",
+        "NVDA:2026-02-25:nvda-20260125.htm:73"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q045",
+      "query": "What was Microsoft's total revenue generated from the sale of Surface Pro keyboards in France?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "MSFT:2026-07-29:msft-20260630.htm:66",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "MSFT:2026-07-29:msft-20260630.htm:12",
+        "NVDA:2026-02-25:nvda-20260125.htm:72",
+        "MSFT:2026-10-28:msft-20260930.htm:35"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q046",
+      "query": "How many individual H100 GPUs did NVIDIA ship to ByteDance in fiscal 2026?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:6",
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:8",
+        "NVDA:2026-08-26:nvda-20260726.htm:28",
+        "NVDA:2026-02-25:nvda-20260125.htm:14"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q047",
+      "query": "What was Tesla's automotive regulatory credits revenue in the second quarter of 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "NVDA:2026-08-26:nvda-20260726.htm:14",
+        "NVDA:2026-08-26:nvda-20260726.htm:15",
+        "NVDA:2026-08-26:nvda-20260726.htm:12",
+        "AAPL:2025-10-31:aapl-20250927.htm:42"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q048",
+      "query": "What was Apple's total revenue from electric vehicle battery sales in fiscal year 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2025-10-31:aapl-20250927.htm:41",
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "NVDA:2026-02-25:nvda-20260125.htm:73"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q049",
+      "query": "What was the average monthly salary of an Amazon warehouse associate in Germany during 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:45",
+        "AMZN:2026-10-30:amzn-20260930.htm:16",
+        "AMZN:2026-02-06:amzn-20251231.htm:5",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2026-07-31:aapl-20260627.htm:7"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q050",
+      "query": "What was the exact electricity consumption in megawatt-hours of Microsoft's Quincy data center in 2026?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-08-26:nvda-20260726.htm:11",
+        "NVDA:2026-02-25:nvda-20260125.htm:72",
+        "MSFT:2026-10-28:msft-20260930.htm:35",
+        "MSFT:2026-07-29:msft-20260630.htm:60",
+        "MSFT:2026-10-28:msft-20260930.htm:33"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q051",
+      "query": "How many units of the Nintendo Switch did NVIDIA manufacture in fiscal year 2026?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "NVDA:2026-02-25:nvda-20260125.htm:66",
+        "NVDA:2026-08-26:nvda-20260726.htm:7",
+        "NVDA:2026-08-26:nvda-20260726.htm:13",
+        "NVDA:2026-02-25:nvda-20260125.htm:72",
+        "NVDA:2026-08-26:nvda-20260726.htm:22"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q052",
+      "query": "What was Apple's total expenditure on office stationery across its Cupertino headquarters in fiscal 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:32",
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2025-10-31:aapl-20250927.htm:40",
+        "AAPL:2025-10-31:aapl-20250927.htm:41",
+        "AAPL:2025-10-31:aapl-20250927.htm:42"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q053",
+      "query": "What was Google's YouTube advertising revenue in the third quarter of 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AAPL:2025-10-31:aapl-20250927.htm:38",
+        "AAPL:2026-07-31:aapl-20260627.htm:8",
+        "AAPL:2026-07-31:aapl-20260627.htm:21",
+        "MSFT:2026-07-29:msft-20260630.htm:66",
+        "NVDA:2026-02-25:nvda-20260125.htm:72"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    },
+    {
+      "query_id": "SEC_Q054",
+      "query": "How many packages were delivered by Amazon drones in California in 2025?",
+      "answerable": false,
+      "retrieved_chunk_ids": [
+        "AMZN:2026-02-06:amzn-20251231.htm:69",
+        "AMZN:2026-10-30:amzn-20260930.htm:49",
+        "AMZN:2026-10-30:amzn-20260930.htm:19",
+        "AAPL:2025-10-31:aapl-20250927.htm:32",
+        "AAPL:2026-07-31:aapl-20260627.htm:16"
+      ],
+      "relevant_chunk_ids": [],
+      "top_k": 5,
+      "retrieved_chunks_count": 5,
+      "corpus_evidence_retrieved": true,
+      "evidence_abstention_supported": false
+    }
+  ]
+}

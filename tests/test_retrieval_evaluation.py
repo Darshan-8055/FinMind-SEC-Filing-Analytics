@@ -13,8 +13,11 @@ from src.retrieval.evaluation import (
     evaluate_query,
     evidence_coverage,
     macro_average_metrics,
+    mean_reciprocal_rank_at_k,
+    paired_bootstrap_confidence_interval,
     precision_at_k,
     recall_at_k,
+    reciprocal_rank_at_k,
 )
 
 
@@ -637,3 +640,109 @@ def test_evaluate_answer_generator_empty_cases():
     assert report["insufficient_evidence_accuracy"] is None
     assert report["grounded_answers_rate"] is None
     assert report["per_case_results"] == []
+
+
+# ---------------------------------------------------------------------------
+# Unit tests — reciprocal_rank_at_k, mean_reciprocal_rank_at_k, paired_bootstrap
+# ---------------------------------------------------------------------------
+
+def test_reciprocal_rank_at_k_rank_one():
+    assert reciprocal_rank_at_k(["A", "B", "C"], {"A"}, 5) == 1.0
+
+
+def test_reciprocal_rank_at_k_rank_two():
+    assert reciprocal_rank_at_k(["X", "A", "C"], {"A"}, 5) == 0.5
+
+
+def test_reciprocal_rank_at_k_rank_five():
+    assert reciprocal_rank_at_k(["X", "Y", "Z", "W", "A"], {"A"}, 5) == 0.2
+
+
+def test_reciprocal_rank_at_k_beyond_k_returns_zero():
+    # Relevant item "A" is at rank 6, beyond k=5
+    assert reciprocal_rank_at_k(["X", "Y", "Z", "W", "V", "A"], {"A"}, 5) == 0.0
+
+
+def test_reciprocal_rank_at_k_not_found_returns_zero():
+    assert reciprocal_rank_at_k(["X", "Y", "Z"], {"A"}, 5) == 0.0
+
+
+def test_reciprocal_rank_at_k_empty_retrieved_returns_zero():
+    assert reciprocal_rank_at_k([], {"A"}, 5) == 0.0
+
+
+def test_reciprocal_rank_at_k_empty_relevant_returns_zero():
+    assert reciprocal_rank_at_k(["A", "B"], set(), 5) == 0.0
+
+
+@pytest.mark.parametrize("invalid_k", [0, -1])
+def test_reciprocal_rank_at_k_rejects_invalid_k(invalid_k):
+    with pytest.raises(ValueError):
+        reciprocal_rank_at_k(["A"], {"A"}, invalid_k)
+
+
+def test_reciprocal_rank_at_k_uses_first_relevant_hit():
+    """When multiple relevant docs exist, RR uses the first (minimum rank)."""
+    assert reciprocal_rank_at_k(["A", "B", "C"], {"A", "B"}, 5) == 1.0
+
+
+def test_mean_reciprocal_rank_at_k():
+    rr_scores = [1.0, 0.5, 0.0, 0.2]
+    assert mean_reciprocal_rank_at_k(rr_scores) == pytest.approx(1.7 / 4.0)
+
+
+def test_mean_reciprocal_rank_at_k_empty_returns_zero():
+    assert mean_reciprocal_rank_at_k([]) == 0.0
+
+
+def test_macro_average_metrics_includes_mrr():
+    results = [
+        {"precision_at_k": 0.5, "recall_at_k": 1.0, "reciprocal_rank_at_k": 1.0},
+        {"precision_at_k": 0.25, "recall_at_k": 0.5, "reciprocal_rank_at_k": 0.5},
+    ]
+    macro = macro_average_metrics(results)
+    assert macro["precision_at_k"] == pytest.approx(0.375)
+    assert macro["recall_at_k"] == pytest.approx(0.75)
+    assert macro["mrr_at_k"] == pytest.approx(0.75)
+
+
+def test_paired_bootstrap_confidence_interval_identical_scores():
+    # Exactly zero difference across all queries
+    baseline = [0.8, 0.6, 0.4, 0.2]
+    treatment = [0.8, 0.6, 0.4, 0.2]
+    res = paired_bootstrap_confidence_interval(baseline, treatment, random_seed=42)
+    assert res["mean_difference"] == pytest.approx(0.0)
+    assert res["ci_lower"] == pytest.approx(0.0)
+    assert res["ci_upper"] == pytest.approx(0.0)
+    assert res["wilcoxon_zero_diff_count"] == 4
+    assert res["wilcoxon_p_value"] == 1.0
+    assert res["statistically_significant"] is False
+
+
+def test_paired_bootstrap_confidence_interval_significant_improvement():
+    # Treatment consistently outperforms baseline
+    baseline = [0.1, 0.2, 0.1, 0.2, 0.15, 0.1, 0.2, 0.1, 0.15, 0.1]
+    treatment = [0.8, 0.9, 0.85, 0.9, 0.8, 0.85, 0.9, 0.8, 0.85, 0.9]
+    res = paired_bootstrap_confidence_interval(
+        baseline, treatment, num_bootstrap=5000, random_seed=42
+    )
+    assert res["mean_difference"] > 0.6
+    assert res["ci_lower"] > 0.5
+    assert res["ci_upper"] > res["ci_lower"]
+    assert res["wilcoxon_p_value"] is not None
+    assert res["wilcoxon_p_value"] < 0.01
+    assert res["statistically_significant"] is True
+
+
+def test_paired_bootstrap_confidence_interval_length_mismatch_raises():
+    with pytest.raises(ValueError):
+        paired_bootstrap_confidence_interval([0.5, 0.6], [0.5])
+
+
+def test_paired_bootstrap_confidence_interval_empty_lists():
+    res = paired_bootstrap_confidence_interval([], [])
+    assert res["mean_difference"] == 0.0
+    assert res["ci_lower"] == 0.0
+    assert res["ci_upper"] == 0.0
+    assert res["wilcoxon_p_value"] is None
+    assert res["statistically_significant"] is False

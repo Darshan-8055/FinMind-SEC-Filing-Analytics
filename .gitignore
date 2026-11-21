@@ -10,6 +10,7 @@ __pycache__/
 models/
 data/raw/
 data/*.db*
+benchmarks/**/*.db*
 
 # Python packaging artifacts
 *.egg-info/

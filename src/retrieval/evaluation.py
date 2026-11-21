@@ -11,6 +11,9 @@ Metric conventions and limitations
   of the relevant set which is checked before division.
 - Macro-average: each query is weighted equally.
   Returns zeros when the query list is empty.
+- Reciprocal Rank (RR@K): 1 / (rank of first relevant document in top-K), or 0.0 if none.
+  Returns 0.0 when retrieved list or relevant set is empty.
+- Mean Reciprocal Rank (MRR@K): macro-average of RR@K across queries.
 - Evidence Coverage: fraction of known relevant chunks cited in the generated answer.
   Returns 0.0 when relevant set is empty.
 - Citation Validity Rate: fraction of citations referencing legitimate retrieved sources.
@@ -20,12 +23,162 @@ Metric conventions and limitations
   claim verification, overall grounding is reported as None (unknown).
 """
 
+import math
+import random
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
 from src.retrieval.hybrid_search import hybrid_search
 from src.retrieval.keyword_search import keyword_search
 from src.retrieval.semantic_search import semantic_search
+
+
+def reciprocal_rank_at_k(
+    retrieved_ids: list[str],
+    relevant_ids: Iterable[str],
+    k: int = 5,
+) -> float:
+    """Reciprocal rank of the first relevant result in the top-k results.
+
+    Returns 1.0 / rank (1-based) for the first relevant document found within
+    the first *k* results. Returns 0.0 if no relevant document appears in the
+    top *k*, or if *retrieved_ids* or *relevant_ids* is empty.
+    Raises ValueError when k < 1.
+    """
+    if k < 1:
+        raise ValueError("k must be at least 1")
+
+    relevant = set(relevant_ids)
+    if not relevant or not retrieved_ids:
+        return 0.0
+
+    for rank, item in enumerate(retrieved_ids[:k], start=1):
+        if item in relevant:
+            return 1.0 / rank
+
+    return 0.0
+
+
+def mean_reciprocal_rank_at_k(
+    per_query_reciprocal_ranks: Sequence[float],
+) -> float:
+    """Compute the Mean Reciprocal Rank (MRR) across a sequence of reciprocal ranks.
+
+    Returns 0.0 when *per_query_reciprocal_ranks* is empty.
+    """
+    if not per_query_reciprocal_ranks:
+        return 0.0
+    return float(sum(per_query_reciprocal_ranks) / len(per_query_reciprocal_ranks))
+
+
+def paired_bootstrap_confidence_interval(
+    baseline_scores: Sequence[float],
+    treatment_scores: Sequence[float],
+    *,
+    num_bootstrap: int = 10000,
+    confidence_level: float = 0.95,
+    random_seed: int = 42,
+) -> dict[str, Any]:
+    """Calculate paired bootstrap confidence interval and Wilcoxon p-value for score differences.
+
+    Parameters
+    ----------
+    baseline_scores:
+        Per-query scores for the baseline system (e.g. dense-only or sparse-only).
+    treatment_scores:
+        Per-query scores for the treatment system (e.g. hybrid).
+    num_bootstrap:
+        Number of bootstrap resamples (default: 10,000).
+    confidence_level:
+        Desired confidence level (default: 0.95 for a 95% CI).
+    random_seed:
+        Fixed random seed for deterministic reproducibility (default: 42).
+
+    Returns
+    -------
+    dict with keys:
+        - "mean_difference": float, treatment mean minus baseline mean
+        - "ci_lower": float, lower bound of the bootstrap CI
+        - "ci_upper": float, upper bound of the bootstrap CI
+        - "confidence_level": float
+        - "num_bootstrap": int
+        - "wilcoxon_p_value": float | None, two-sided p-value from Wilcoxon signed-rank test
+        - "wilcoxon_zero_diff_count": int, count of queries with identical scores
+        - "statistically_significant": bool, True if 0 is outside CI and p_value < (1 - confidence_level)
+    """
+    if len(baseline_scores) != len(treatment_scores):
+        raise ValueError(
+            f"baseline_scores (len {len(baseline_scores)}) and treatment_scores "
+            f"(len {len(treatment_scores)}) must have identical lengths"
+        )
+
+    n = len(baseline_scores)
+    if n == 0:
+        return {
+            "mean_difference": 0.0,
+            "ci_lower": 0.0,
+            "ci_upper": 0.0,
+            "confidence_level": confidence_level,
+            "num_bootstrap": num_bootstrap,
+            "wilcoxon_p_value": None,
+            "wilcoxon_zero_diff_count": 0,
+            "statistically_significant": False,
+        }
+
+    b_list = [float(x) for x in baseline_scores]
+    t_list = [float(x) for x in treatment_scores]
+    diffs = [t - b for t, b in zip(t_list, b_list)]
+    mean_diff = sum(diffs) / n
+
+    # Reproducible paired bootstrap resampling using the standard library
+    rng = random.Random(random_seed)
+    bootstrap_means: list[float] = []
+    for _ in range(num_bootstrap):
+        sample = [diffs[rng.randrange(n)] for _ in range(n)]
+        bootstrap_means.append(sum(sample) / n)
+
+    bootstrap_means.sort()
+
+    alpha = 1.0 - confidence_level
+    lower_idx = max(0, int(math.floor(alpha / 2.0 * num_bootstrap)))
+    upper_idx = min(num_bootstrap - 1, int(math.ceil((1.0 - alpha / 2.0) * num_bootstrap)) - 1)
+    ci_lower = bootstrap_means[lower_idx]
+    ci_upper = bootstrap_means[upper_idx]
+
+    # Wilcoxon signed-rank test: lazy SciPy import with graceful fallback
+    zero_diff_count = sum(1 for d in diffs if d == 0.0)
+    wilcoxon_p_value: float | None = None
+
+    if zero_diff_count == n:
+        # All differences are exactly 0 — Wilcoxon is undefined; p-value is 1.0
+        wilcoxon_p_value = 1.0
+    else:
+        try:
+            from scipy.stats import wilcoxon  # noqa: PLC0415
+        except ImportError:
+            wilcoxon_p_value = None
+        else:
+            # zero_method='pratt' includes zero differences in ranking (handles ties correctly)
+            res = wilcoxon(t_list, b_list, zero_method="pratt", alternative="two-sided")
+            pval = float(res.pvalue)
+            # math.isnan replaces np.isnan — no numpy required
+            wilcoxon_p_value = 1.0 if math.isnan(pval) else pval
+
+    if wilcoxon_p_value is None:
+        is_significant = False
+    else:
+        is_significant = (ci_lower > 0.0 or ci_upper < 0.0) and (wilcoxon_p_value < alpha)
+
+    return {
+        "mean_difference": mean_diff,
+        "ci_lower": ci_lower,
+        "ci_upper": ci_upper,
+        "confidence_level": confidence_level,
+        "num_bootstrap": num_bootstrap,
+        "wilcoxon_p_value": wilcoxon_p_value,
+        "wilcoxon_zero_diff_count": zero_diff_count,
+        "statistically_significant": is_significant,
+    }
 
 
 def precision_at_k(
@@ -95,6 +248,7 @@ def _score_results(
         "relevant_chunk_ids": sorted(relevant_ids),
         "precision_at_k": precision_at_k(retrieved_ids, relevant_ids, k),
         "recall_at_k": recall_at_k(retrieved_ids, relevant_ids, k),
+        "reciprocal_rank_at_k": reciprocal_rank_at_k(retrieved_ids, relevant_ids, k),
     }
 
 
@@ -165,10 +319,11 @@ def evaluate_all_retrievers(
 def macro_average_metrics(
     per_query_results: list[dict[str, Any]],
 ) -> dict[str, float]:
-    """Return macro-average Precision@K and Recall@K across queries.
+    """Return macro-average Precision@K, Recall@K, and MRR@K across queries.
 
     Each element of *per_query_results* must contain ``precision_at_k`` and
-    ``recall_at_k`` keys (as produced by :func:`_score_results`).
+    ``recall_at_k`` keys (as produced by :func:`_score_results`). If
+    ``reciprocal_rank_at_k`` is present, computes ``mrr_at_k``.
 
     The macro-average weights every query equally regardless of the size of
     its relevant set.  Returns zeros when the input list is empty so callers
@@ -176,15 +331,20 @@ def macro_average_metrics(
 
     Returns
     -------
-    dict with keys ``precision_at_k`` and ``recall_at_k``.
+    dict with keys ``precision_at_k``, ``recall_at_k``, and ``mrr_at_k``.
     """
     if not per_query_results:
-        return {"precision_at_k": 0.0, "recall_at_k": 0.0}
+        return {"precision_at_k": 0.0, "recall_at_k": 0.0, "mrr_at_k": 0.0}
 
     n = len(per_query_results)
     avg_precision = sum(r["precision_at_k"] for r in per_query_results) / n
     avg_recall = sum(r["recall_at_k"] for r in per_query_results) / n
-    return {"precision_at_k": avg_precision, "recall_at_k": avg_recall}
+    avg_mrr = sum(r.get("reciprocal_rank_at_k", 0.0) for r in per_query_results) / n
+    return {
+        "precision_at_k": avg_precision,
+        "recall_at_k": avg_recall,
+        "mrr_at_k": avg_mrr,
+    }
 
 
 def evaluate_all_queries(

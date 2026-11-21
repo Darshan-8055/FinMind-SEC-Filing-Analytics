@@ -1,0 +1,281 @@
+{
+  "metadata": {
+    "benchmark_dataset": "FinMind SEC Filing Retrieval Benchmark (Phase 2)",
+    "source_filings_count": 8,
+    "companies": [
+      "AAPL",
+      "MSFT",
+      "AMZN",
+      "NVDA"
+    ],
+    "corpus_chunks_count": 593,
+    "total_queries_count": 54,
+    "answerable_queries_count": 42,
+    "unanswerable_queries_count": 12,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "embedding_dimension": 384,
+    "top_k": 5,
+    "candidate_k": 30,
+    "rrf_k": 60,
+    "qdrant_collection": "benchmark_eval_chunks (in-memory)",
+    "sparse_index_storage": "benchmarks/sec_filings/eval_sparse_index.db"
+  },
+  "original_step3_metrics": {
+    "dense": {
+      "precision_at_k": 0.1,
+      "recall_at_k": 0.5,
+      "mrr_at_k": 0.3083333333333333
+    },
+    "sparse": {
+      "precision_at_k": 0.16666666666666666,
+      "recall_at_k": 0.8333333333333334,
+      "mrr_at_k": 0.6587301587301587
+    },
+    "hybrid": {
+      "precision_at_k": 0.1285714285714286,
+      "recall_at_k": 0.6428571428571429,
+      "mrr_at_k": 0.4722222222222222
+    }
+  },
+  "statistical_comparisons": [
+    {
+      "comparison": "Dense-only vs Sparse-only",
+      "system_a": "Dense-only",
+      "system_b": "Sparse-only",
+      "metric": "Precision@5",
+      "system_a_mean": 0.1,
+      "system_b_mean": 0.16666666666666666,
+      "mean_paired_difference": -0.06666666666666668,
+      "higher_system": "Sparse-only",
+      "ci_95": {
+        "lower": -0.1,
+        "upper": -0.0380952380952381,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.00046525815807105003,
+      "nonzero_differences_count": 16,
+      "zero_differences_count": 26,
+      "holm_adjusted_p_value": 0.0032568071064973505,
+      "significant_at_alpha_0_05": true
+    },
+    {
+      "comparison": "Dense-only vs Sparse-only",
+      "system_a": "Dense-only",
+      "system_b": "Sparse-only",
+      "metric": "Recall@5",
+      "system_a_mean": 0.5,
+      "system_b_mean": 0.8333333333333334,
+      "mean_paired_difference": -0.3333333333333333,
+      "higher_system": "Sparse-only",
+      "ci_95": {
+        "lower": -0.5,
+        "upper": -0.19047619047619047,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.00046525815807105003,
+      "nonzero_differences_count": 16,
+      "zero_differences_count": 26,
+      "holm_adjusted_p_value": 0.0032568071064973505,
+      "significant_at_alpha_0_05": true
+    },
+    {
+      "comparison": "Dense-only vs Sparse-only",
+      "system_a": "Dense-only",
+      "system_b": "Sparse-only",
+      "metric": "MRR@5",
+      "system_a_mean": 0.3083333333333333,
+      "system_b_mean": 0.6587301587301587,
+      "mean_paired_difference": -0.3503968253968254,
+      "higher_system": "Sparse-only",
+      "ci_95": {
+        "lower": -0.4932539682539683,
+        "upper": -0.2015873015873016,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 4.7041038535112715e-05,
+      "nonzero_differences_count": 30,
+      "zero_differences_count": 12,
+      "holm_adjusted_p_value": 0.00042336934681601443,
+      "significant_at_alpha_0_05": true
+    },
+    {
+      "comparison": "Hybrid vs Dense-only",
+      "system_a": "Hybrid",
+      "system_b": "Dense-only",
+      "metric": "Precision@5",
+      "system_a_mean": 0.1285714285714286,
+      "system_b_mean": 0.1,
+      "mean_paired_difference": 0.028571428571428574,
+      "higher_system": "Hybrid",
+      "ci_95": {
+        "lower": 0.004761904761904762,
+        "upper": 0.05238095238095238,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.03389485352468927,
+      "nonzero_differences_count": 8,
+      "zero_differences_count": 34,
+      "holm_adjusted_p_value": 0.06778970704937853,
+      "significant_at_alpha_0_05": false
+    },
+    {
+      "comparison": "Hybrid vs Dense-only",
+      "system_a": "Hybrid",
+      "system_b": "Dense-only",
+      "metric": "Recall@5",
+      "system_a_mean": 0.6428571428571429,
+      "system_b_mean": 0.5,
+      "mean_paired_difference": 0.14285714285714285,
+      "higher_system": "Hybrid",
+      "ci_95": {
+        "lower": 0.023809523809523808,
+        "upper": 0.2619047619047619,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.03389485352468927,
+      "nonzero_differences_count": 8,
+      "zero_differences_count": 34,
+      "holm_adjusted_p_value": 0.06778970704937853,
+      "significant_at_alpha_0_05": false
+    },
+    {
+      "comparison": "Hybrid vs Dense-only",
+      "system_a": "Hybrid",
+      "system_b": "Dense-only",
+      "metric": "MRR@5",
+      "system_a_mean": 0.4722222222222222,
+      "system_b_mean": 0.3083333333333333,
+      "mean_paired_difference": 0.1638888888888889,
+      "higher_system": "Hybrid",
+      "ci_95": {
+        "lower": 0.06190476190476189,
+        "upper": 0.2611111111111111,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.0001900431933647385,
+      "nonzero_differences_count": 19,
+      "zero_differences_count": 23,
+      "holm_adjusted_p_value": 0.001520345546917908,
+      "significant_at_alpha_0_05": true
+    },
+    {
+      "comparison": "Hybrid vs Sparse-only",
+      "system_a": "Hybrid",
+      "system_b": "Sparse-only",
+      "metric": "Precision@5",
+      "system_a_mean": 0.1285714285714286,
+      "system_b_mean": 0.16666666666666666,
+      "mean_paired_difference": -0.0380952380952381,
+      "higher_system": "Sparse-only",
+      "ci_95": {
+        "lower": -0.06666666666666668,
+        "upper": -0.014285714285714287,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.011412036386001651,
+      "nonzero_differences_count": 10,
+      "zero_differences_count": 32,
+      "holm_adjusted_p_value": 0.050831275956579734,
+      "significant_at_alpha_0_05": false
+    },
+    {
+      "comparison": "Hybrid vs Sparse-only",
+      "system_a": "Hybrid",
+      "system_b": "Sparse-only",
+      "metric": "Recall@5",
+      "system_a_mean": 0.6428571428571429,
+      "system_b_mean": 0.8333333333333334,
+      "mean_paired_difference": -0.19047619047619047,
+      "higher_system": "Sparse-only",
+      "ci_95": {
+        "lower": -0.3333333333333333,
+        "upper": -0.07142857142857142,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.011412036386001651,
+      "nonzero_differences_count": 10,
+      "zero_differences_count": 32,
+      "holm_adjusted_p_value": 0.050831275956579734,
+      "significant_at_alpha_0_05": false
+    },
+    {
+      "comparison": "Hybrid vs Sparse-only",
+      "system_a": "Hybrid",
+      "system_b": "Sparse-only",
+      "metric": "MRR@5",
+      "system_a_mean": 0.4722222222222222,
+      "system_b_mean": 0.6587301587301587,
+      "mean_paired_difference": -0.1865079365079365,
+      "higher_system": "Sparse-only",
+      "ci_95": {
+        "lower": -0.31547619047619047,
+        "upper": -0.06547619047619048,
+        "confidence_level": 0.95,
+        "bootstrap_resamples": 10000,
+        "random_seed": 42
+      },
+      "wilcoxon_p_value_raw": 0.010166255191315947,
+      "nonzero_differences_count": 21,
+      "zero_differences_count": 21,
+      "holm_adjusted_p_value": 0.050831275956579734,
+      "significant_at_alpha_0_05": false
+    }
+  ],
+  "multiple_comparison_method": {
+    "method": "Holm-Bonferroni",
+    "family_size": 9,
+    "family_wise_alpha": 0.05,
+    "rationale": "Controls Family-Wise Error Rate (FWER) across the nine planned hypothesis tests spanning three metrics across three pairwise system comparisons."
+  },
+  "unanswerable_query_analysis": {
+    "dense": {
+      "configuration": "Dense-only",
+      "total_queries": 12,
+      "retrieved_at_least_one_chunk": 12,
+      "retrieved_zero_chunks": 0,
+      "zero_overlap_with_ground_truth": 12,
+      "abstention_mechanism_exists": false,
+      "note": "Production pipeline performs top-k retrieval without threshold-based score filtering or abstention classification. Chunks returned are irrelevant or general disclosure passages."
+    },
+    "sparse": {
+      "configuration": "Sparse-only",
+      "total_queries": 12,
+      "retrieved_at_least_one_chunk": 12,
+      "retrieved_zero_chunks": 0,
+      "zero_overlap_with_ground_truth": 12,
+      "abstention_mechanism_exists": false,
+      "note": "Production pipeline performs top-k retrieval without threshold-based score filtering or abstention classification. Chunks returned are irrelevant or general disclosure passages."
+    },
+    "hybrid": {
+      "configuration": "Hybrid",
+      "total_queries": 12,
+      "retrieved_at_least_one_chunk": 12,
+      "retrieved_zero_chunks": 0,
+      "zero_overlap_with_ground_truth": 12,
+      "abstention_mechanism_exists": false,
+      "note": "Production pipeline performs top-k retrieval without threshold-based score filtering or abstention classification. Chunks returned are irrelevant or general disclosure passages."
+    }
+  },
+  "limitations": [
+    "Benchmark is evaluated on 42 answerable queries across 4 major technology companies and 8 filings; findings do not necessarily generalize to all SEC filing forms or industries.",
+    "BM25 high performance is driven by exact financial keyword and line-item phrasing present in answerable queries.",
+    "Production pipeline currently lacks an explicit abstention decision rule for unanswerable queries.",
+    "Statistical significance does not imply domain-specific practical sufficiency for autonomous financial reporting."
+  ]
+}
